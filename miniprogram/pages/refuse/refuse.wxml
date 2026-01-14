@@ -1,0 +1,43 @@
+<!--pages/refuse/refuse.wxml-->
+<view class="container {{ isLandscape ? 'landscape' : 'portrait' }}">
+  <!-- 全屏拒烟文字 -->
+  <view class="refuse-content">
+    <text class="refuse-text">{{ refuseText }}</text>
+    <text class="refuse-subtitle">{{ subtitleText }}</text>
+  </view>
+
+  <!-- 操作提示 -->
+  <view class="tip-overlay" wx:if="{{ !isLandscape }}">
+    <text class="tip-text">📱 横屏显示效果更佳</text>
+    <text class="tip-text">👆 点击可自定义文字</text>
+  </view>
+
+  <!-- 关闭按钮 -->
+  <view class="close-btn" bindtap="handleClose">
+    <text class="close-icon">✕</text>
+  </view>
+
+  <!-- 自定义文字弹窗 -->
+  <view class="modal-mask" wx:if="{{ showCustomModal }}" bindtap="closeCustomModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">自定义拒烟文字</text>
+      </view>
+      <view class="modal-body">
+        <textarea 
+          class="custom-input" 
+          value="{{ customText }}" 
+          bindinput="onTextInput"
+          placeholder="请输入拒烟文字"
+          maxlength="50"
+          auto-focus
+        ></textarea>
+        <view class="char-count">{{ customText.length }}/50</view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-button cancel" bindtap="closeCustomModal">取消</button>
+        <button class="modal-button confirm" bindtap="confirmCustomText">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

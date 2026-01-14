@@ -1,0 +1,7 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "我要戒烟",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#F5F5F5",
+  "backgroundTextStyle": "dark"
+}

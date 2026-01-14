@@ -1,0 +1,93 @@
+<!--pages/calendar/calendar.wxml-->
+<view class="container">
+  <!-- 月份切换 -->
+  <view class="month-selector card">
+    <view class="month-btn" bindtap="prevMonth">
+      <text class="arrow-icon">‹</text>
+    </view>
+    <view class="month-display">
+      <text class="month-text">{{ currentYear }}年{{ currentMonth }}月</text>
+    </view>
+    <view class="month-btn" bindtap="nextMonth">
+      <text class="arrow-icon">›</text>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section card">
+    <view class="stat-item">
+      <text class="stat-value">{{ continuousDays }}</text>
+      <text class="stat-label">连续签到</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{ monthCheckin }}</text>
+      <text class="stat-label">本月签到</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{ totalCheckin }}</text>
+      <text class="stat-label">累计签到</text>
+    </view>
+  </view>
+
+  <!-- 日历 -->
+  <view class="calendar-section card">
+    <!-- 星期标题 -->
+    <view class="week-header">
+      <view class="week-item" wx:for="{{ weekDays }}" wx:key="*this">
+        <text class="week-text">{{ item }}</text>
+      </view>
+    </view>
+
+    <!-- 日期网格 -->
+    <view class="calendar-grid">
+      <view 
+        class="day-item {{ item.isCurrentMonth ? '' : 'other-month' }} {{ item.isToday ? 'today' : '' }} {{ item.isChecked ? 'checked' : '' }}" 
+        wx:for="{{ calendarDays }}" 
+        wx:key="index"
+        bindtap="onDayClick"
+        data-date="{{ item.dateString }}"
+        data-checked="{{ item.isChecked }}"
+      >
+        <text class="day-number">{{ item.date }}</text>
+        <view class="day-status" wx:if="{{ item.isChecked }}">
+          <text class="status-icon">✓</text>
+        </view>
+        <view class="day-makeup" wx:if="{{ item.isMakeUp }}">
+          <text class="makeup-icon">补</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 补签说明 -->
+  <view class="makeup-section card">
+    <view class="makeup-header">
+      <text class="makeup-title">补签说明</text>
+      <text class="makeup-count">剩余次数: {{ makeUpCount }}/3</text>
+    </view>
+    <view class="makeup-tips">
+      <text class="tip-item">• 每月可补签3次</text>
+      <text class="tip-item">• 补签需观看激励视频广告</text>
+      <text class="tip-item">• 只能补签本月漏签的日期</text>
+    </view>
+  </view>
+</view>
+
+<!-- 补签确认弹窗 -->
+<view class="modal-mask" wx:if="{{ showMakeUpModal }}" bindtap="closeMakeUpModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">确认补签</text>
+    </view>
+    <view class="modal-body">
+      <text class="modal-text">确定要补签 {{ selectedDate }} 吗？</text>
+      <text class="modal-tip">需要观看一段广告视频</text>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-button cancel" bindtap="closeMakeUpModal">取消</button>
+      <button class="modal-button confirm" bindtap="confirmMakeUp">确定</button>
+    </view>
+  </view>
+</view>

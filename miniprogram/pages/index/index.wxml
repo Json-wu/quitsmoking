@@ -1,0 +1,148 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 戒烟天数展示区 -->
+  <view class="quit-days-section">
+    <view class="quit-icon">🚭</view>
+    <view class="quit-title">我已戒烟</view>
+    <view class="quit-days-wrapper">
+      <text class="quit-days-number">{{ quitDays }}</text>
+      <text class="quit-days-unit">天</text>
+    </view>
+    <view class="quit-subtitle" wx:if="{{ quitDays > 0 }}">
+      距离目标还有 {{ targetDays }} 天
+    </view>
+    <view class="quit-subtitle" wx:else>
+      <text class="text-tertiary">点击下方设置开始戒烟日期</text>
+    </view>
+  </view>
+
+  <!-- 签到区域 -->
+  <view class="checkin-section card">
+    <view class="checkin-header flex-between">
+      <view class="checkin-info">
+        <text class="checkin-label">连续签到</text>
+        <text class="checkin-days">{{ currentStreak }}天</text>
+      </view>
+      <view class="checkin-info">
+        <text class="checkin-label">累计签到</text>
+        <text class="checkin-days">{{ totalCheckin }}天</text>
+      </view>
+    </view>
+    
+    <view class="checkin-button-wrapper">
+      <button 
+        class="checkin-button {{ hasCheckedToday ? 'checked' : '' }}" 
+        bindtap="handleCheckin"
+        disabled="{{ hasCheckedToday }}"
+      >
+        <text class="checkin-button-icon">{{ hasCheckedToday ? '✓' : '📝' }}</text>
+        <text class="checkin-button-text">{{ hasCheckedToday ? '今日已签到' : '点击签到' }}</text>
+      </button>
+    </view>
+
+    <view class="checkin-footer">
+      <text class="checkin-tip" bindtap="goToCalendar">查看签到日历 ></text>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-entry-section">
+    <view class="section-title">快捷入口</view>
+    <view class="quick-entry-grid">
+      <view class="quick-entry-item" bindtap="goToCigarette">
+        <view class="quick-entry-icon">🚬</view>
+        <text class="quick-entry-name">电子烟</text>
+      </view>
+      <view class="quick-entry-item" bindtap="goToRefuse">
+        <view class="quick-entry-icon">🛡️</view>
+        <text class="quick-entry-name">拒烟神器</text>
+      </view>
+      <view class="quick-entry-item" bindtap="goToCertificate">
+        <view class="quick-entry-icon">🏆</view>
+        <text class="quick-entry-name">荣誉证书</text>
+      </view>
+      <view class="quick-entry-item" bindtap="goToMethods">
+        <view class="quick-entry-icon">📚</view>
+        <text class="quick-entry-name">戒烟方法</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 健康收益统计 -->
+  <view class="health-stats-section card">
+    <view class="section-title">健康收益</view>
+    <view class="health-stats-grid">
+      <view class="health-stat-item">
+        <view class="health-stat-icon">💰</view>
+        <view class="health-stat-value">¥{{ savedMoney }}</view>
+        <view class="health-stat-label">节省金额</view>
+      </view>
+      <view class="health-stat-item">
+        <view class="health-stat-icon">🚬</view>
+        <view class="health-stat-value">{{ savedCigarettes }}</view>
+        <view class="health-stat-label">少抽香烟</view>
+      </view>
+      <view class="health-stat-item">
+        <view class="health-stat-icon">❤️</view>
+        <view class="health-stat-value">{{ healthIndex }}%</view>
+        <view class="health-stat-label">健康指数</view>
+      </view>
+    </view>
+    <view class="health-tip">
+      <text class="text-sm text-secondary">坚持戒烟，健康生活每一天</text>
+    </view>
+  </view>
+
+  <!-- 戒烟方法推荐 -->
+  <view class="methods-section" wx:if="{{ recommendArticles.length > 0 }}">
+    <view class="section-title flex-between">
+      <text>戒烟方法推荐</text>
+      <text class="more-link" bindtap="goToMethods">更多 ></text>
+    </view>
+    <view class="article-list">
+      <view 
+        class="article-item card" 
+        wx:for="{{ recommendArticles }}" 
+        wx:key="id"
+        bindtap="goToArticle"
+        data-id="{{ item.id }}"
+      >
+        <view class="article-title text-ellipsis">{{ item.title }}</view>
+        <view class="article-meta">
+          <text class="article-tag">{{ item.category }}</text>
+          <text class="article-views">👁️ {{ item.viewCount }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Banner广告 -->
+  <view class="ad-section">
+    <ad unit-id="adunit-xxxxxxxxxxxxxxxx" ad-type="banner" ad-theme="white"></ad>
+  </view>
+</view>
+
+<!-- 设置戒烟日期弹窗 -->
+<view class="modal-mask" wx:if="{{ showDatePicker }}" bindtap="closeDatePicker">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">设置开始戒烟日期</text>
+    </view>
+    <view class="modal-body">
+      <picker 
+        mode="date" 
+        value="{{ quitDate }}" 
+        end="{{ today }}"
+        bindchange="onDateChange"
+      >
+        <view class="date-picker">
+          <text>{{ quitDate || '请选择日期' }}</text>
+        </view>
+      </picker>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-button cancel" bindtap="closeDatePicker">取消</button>
+      <button class="modal-button confirm" bindtap="confirmQuitDate">确定</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,102 @@
+<!--pages/article/article.wxml-->
+<view class="container">
+  <!-- 文章头部 -->
+  <view class="article-header">
+    <image 
+      wx:if="{{ article.coverImage }}"
+      class="cover-image" 
+      src="{{ article.coverImage }}" 
+      mode="aspectFill"
+    ></image>
+    <view class="header-content">
+      <text class="article-title">{{ article.title }}</text>
+      <view class="article-meta">
+        <text class="category-tag">{{ article.categoryName }}</text>
+        <text class="publish-date">{{ article.publishDate }}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章内容 -->
+  <view class="article-body">
+    <rich-text nodes="{{ article.content }}"></rich-text>
+  </view>
+
+  <!-- 文章标签 -->
+  <view class="article-tags" wx:if="{{ article.tags && article.tags.length > 0 }}">
+    <text class="tag-label">标签：</text>
+    <view class="tags-list">
+      <text class="tag-item" wx:for="{{ article.tags }}" wx:key="*this">{{ item }}</text>
+    </view>
+  </view>
+
+  <!-- 互动区域 -->
+  <view class="interaction-section card">
+    <view class="interaction-stats">
+      <view class="stat-item">
+        <text class="stat-icon">👁️</text>
+        <text class="stat-text">{{ article.viewCount }}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-icon">❤️</text>
+        <text class="stat-text">{{ article.likeCount }}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-icon">⭐</text>
+        <text class="stat-text">{{ article.collectCount }}</text>
+      </view>
+    </view>
+    
+    <view class="interaction-buttons">
+      <button 
+        class="interaction-btn {{ article.isLiked ? 'active' : '' }}" 
+        bindtap="handleLike"
+      >
+        <text class="btn-icon">{{ article.isLiked ? '❤️' : '🤍' }}</text>
+        <text class="btn-text">{{ article.isLiked ? '已点赞' : '点赞' }}</text>
+      </button>
+      <button 
+        class="interaction-btn {{ article.isCollected ? 'active' : '' }}" 
+        bindtap="handleCollect"
+      >
+        <text class="btn-icon">{{ article.isCollected ? '⭐' : '☆' }}</text>
+        <text class="btn-text">{{ article.isCollected ? '已收藏' : '收藏' }}</text>
+      </button>
+      <button class="interaction-btn" open-type="share">
+        <text class="btn-icon">📤</text>
+        <text class="btn-text">分享</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 相关推荐 -->
+  <view class="related-section" wx:if="{{ relatedArticles.length > 0 }}">
+    <view class="section-header">
+      <text class="section-title">相关推荐</text>
+    </view>
+    <view class="related-list">
+      <view 
+        class="related-item" 
+        wx:for="{{ relatedArticles }}" 
+        wx:key="_id"
+        bindtap="goToArticle"
+        data-id="{{ item._id }}"
+      >
+        <image 
+          class="related-cover" 
+          src="{{ item.coverImage }}" 
+          mode="aspectFill"
+        ></image>
+        <view class="related-info">
+          <text class="related-title text-ellipsis-2">{{ item.title }}</text>
+          <text class="related-meta">👁️ {{ item.viewCount }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Banner广告 -->
+  <view class="ad-section">
+    <ad unit-id="adunit-xxxxxxxxxxxxxxxx" ad-type="banner" ad-theme="white"></ad>
+  </view>
+</view>

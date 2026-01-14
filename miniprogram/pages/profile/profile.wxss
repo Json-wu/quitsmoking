@@ -1,0 +1,197 @@
+/* pages/profile/profile.wxss */
+
+.container {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+  background-color: var(--bg-color);
+}
+
+/* 用户信息区域 */
+.user-section {
+  margin: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  margin-right: var(--spacing-md);
+}
+
+.user-detail {
+  flex: 1;
+}
+
+.nickname {
+  display: block;
+  font-size: var(--font-xl);
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 12rpx;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8rpx 16rpx;
+  border-radius: 32rpx;
+}
+
+.badge-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.badge-text {
+  font-size: var(--font-sm);
+  color: #FFFFFF;
+}
+
+/* 数据统计 */
+.stats-section {
+  margin: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.stat-card {
+  background-color: var(--bg-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-number {
+  font-size: var(--font-xxl);
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+/* 我的勋章 */
+.badges-section {
+  margin: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.section-title {
+  font-size: var(--font-lg);
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.badge-count {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--bg-gray);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.badge-item.locked {
+  opacity: 0.3;
+}
+
+.badge-emoji {
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+}
+
+.badge-name {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* 功能入口 */
+.menu-section {
+  margin: 0 var(--spacing-md) var(--spacing-md);
+  background-color: var(--bg-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-md);
+  border-bottom: 1rpx solid var(--border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background-color: var(--bg-gray);
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon {
+  font-size: 40rpx;
+  margin-right: var(--spacing-md);
+}
+
+.menu-title {
+  font-size: var(--font-md);
+  color: var(--text-primary);
+}
+
+.menu-arrow {
+  font-size: var(--font-md);
+  color: var(--text-tertiary);
+}
+
+/* 广告区域 */
+.ad-section {
+  margin: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+}

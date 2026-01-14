@@ -1,0 +1,26 @@
+<!--components/article-card/article-card.wxml-->
+<view class="article-card {{ customClass }}" bindtap="handleTap">
+  <image 
+    wx:if="{{ coverImage }}"
+    class="article-cover" 
+    src="{{ coverImage }}" 
+    mode="aspectFill"
+  ></image>
+  
+  <view class="article-content">
+    <text class="article-title text-ellipsis-2">{{ title }}</text>
+    <text class="article-summary text-ellipsis-2" wx:if="{{ summary }}">{{ summary }}</text>
+    
+    <view class="article-footer">
+      <view class="footer-left">
+        <text class="category-tag">{{ categoryName }}</text>
+        <text class="view-count">👁️ {{ viewCount }}</text>
+      </view>
+      <view class="footer-right">
+        <text class="like-btn {{ isLiked ? 'liked' : '' }}" catchtap="handleLike">
+          ❤️ {{ likeCount }}
+        </text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,187 @@
+<!--pages/settings/settings.wxml-->
+<view class="container">
+  <!-- 基础设置 -->
+  <view class="settings-section card">
+    <view class="section-title">基础设置</view>
+    
+    <view class="setting-item" bindtap="handleQuitDateSetting">
+      <view class="item-left">
+        <text class="item-icon">📅</text>
+        <text class="item-label">戒烟开始日期</text>
+      </view>
+      <view class="item-right">
+        <text class="item-value">{{ quitDate }}</text>
+        <text class="arrow-icon">›</text>
+      </view>
+    </view>
+
+    <view class="setting-item">
+      <view class="item-left">
+        <text class="item-icon">🚬</text>
+        <text class="item-label">每日吸烟量</text>
+      </view>
+      <view class="item-right">
+        <input 
+          class="item-input" 
+          type="number" 
+          value="{{ dailyCigarettes }}" 
+          bindinput="onDailyCigarettesInput"
+          placeholder="支/天"
+        />
+      </view>
+    </view>
+
+    <view class="setting-item">
+      <view class="item-left">
+        <text class="item-icon">💰</text>
+        <text class="item-label">每包香烟价格</text>
+      </view>
+      <view class="item-right">
+        <input 
+          class="item-input" 
+          type="digit" 
+          value="{{ cigarettePrice }}" 
+          bindinput="onCigarettePriceInput"
+          placeholder="元/包"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 提醒设置 -->
+  <view class="settings-section card">
+    <view class="section-title">提醒设置</view>
+    
+    <view class="setting-item">
+      <view class="item-left">
+        <text class="item-icon">🔔</text>
+        <text class="item-label">每日签到提醒</text>
+      </view>
+      <view class="item-right">
+        <switch 
+          checked="{{ checkinReminder }}" 
+          bindchange="onCheckinReminderChange"
+          color="#FF6B6B"
+        />
+      </view>
+    </view>
+
+    <view class="setting-item">
+      <view class="item-left">
+        <text class="item-icon">⏰</text>
+        <text class="item-label">提醒时间</text>
+      </view>
+      <view class="item-right">
+        <picker 
+          mode="time" 
+          value="{{ reminderTime }}" 
+          bindchange="onReminderTimeChange"
+          disabled="{{ !checkinReminder }}"
+        >
+          <text class="item-value {{ !checkinReminder ? 'disabled' : '' }}">{{ reminderTime }}</text>
+        </picker>
+        <text class="arrow-icon">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 隐私设置 -->
+  <view class="settings-section card">
+    <view class="section-title">隐私设置</view>
+    
+    <view class="setting-item">
+      <view class="item-left">
+        <text class="item-icon">👥</text>
+        <text class="item-label">显示在排行榜</text>
+      </view>
+      <view class="item-right">
+        <switch 
+          checked="{{ showInRanking }}" 
+          bindchange="onShowInRankingChange"
+          color="#FF6B6B"
+        />
+      </view>
+    </view>
+
+    <view class="setting-item">
+      <view class="item-left">
+        <text class="item-icon">📊</text>
+        <text class="item-label">公开我的数据</text>
+      </view>
+      <view class="item-right">
+        <switch 
+          checked="{{ publicData }}" 
+          bindchange="onPublicDataChange"
+          color="#FF6B6B"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 其他设置 -->
+  <view class="settings-section card">
+    <view class="section-title">其他</view>
+    
+    <view class="setting-item" bindtap="handleClearCache">
+      <view class="item-left">
+        <text class="item-icon">🗑️</text>
+        <text class="item-label">清除缓存</text>
+      </view>
+      <view class="item-right">
+        <text class="item-value">{{ cacheSize }}</text>
+        <text class="arrow-icon">›</text>
+      </view>
+    </view>
+
+    <view class="setting-item" bindtap="handleCheckUpdate">
+      <view class="item-left">
+        <text class="item-icon">🔄</text>
+        <text class="item-label">检查更新</text>
+      </view>
+      <view class="item-right">
+        <text class="item-value">{{ version }}</text>
+        <text class="arrow-icon">›</text>
+      </view>
+    </view>
+
+    <view class="setting-item" bindtap="handleAbout">
+      <view class="item-left">
+        <text class="item-icon">ℹ️</text>
+        <text class="item-label">关于我们</text>
+      </view>
+      <view class="item-right">
+        <text class="arrow-icon">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-section">
+    <button class="save-btn" bindtap="handleSave">保存设置</button>
+  </view>
+</view>
+
+<!-- 日期选择弹窗 -->
+<view class="modal-mask" wx:if="{{ showDatePicker }}" bindtap="closeDatePicker">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">选择戒烟开始日期</text>
+    </view>
+    <view class="modal-body">
+      <picker 
+        mode="date" 
+        value="{{ tempQuitDate }}" 
+        end="{{ today }}"
+        bindchange="onQuitDateChange"
+      >
+        <view class="date-picker">
+          <text class="date-text">{{ tempQuitDate }}</text>
+        </view>
+      </picker>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-button cancel" bindtap="closeDatePicker">取消</button>
+      <button class="modal-button confirm" bindtap="confirmQuitDate">确定</button>
+    </view>
+  </view>
+</view>

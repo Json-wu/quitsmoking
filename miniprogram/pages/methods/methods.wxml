@@ -1,0 +1,77 @@
+<!--pages/methods/methods.wxml-->
+<view class="container">
+  <!-- 分类标签 -->
+  <view class="category-tabs">
+    <scroll-view class="tabs-scroll" scroll-x>
+      <view class="tabs-wrapper">
+        <view 
+          class="tab-item {{ currentCategory === item.id ? 'active' : '' }}" 
+          wx:for="{{ categories }}" 
+          wx:key="id"
+          bindtap="onCategoryChange"
+          data-id="{{ item.id }}"
+        >
+          <text class="tab-text">{{ item.name }}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 文章列表 -->
+  <view class="article-list">
+    <view 
+      class="article-item card" 
+      wx:for="{{ articles }}" 
+      wx:key="_id"
+      bindtap="goToArticle"
+      data-id="{{ item._id }}"
+    >
+      <!-- 封面图 -->
+      <image 
+        wx:if="{{ item.coverImage }}"
+        class="article-cover" 
+        src="{{ item.coverImage }}" 
+        mode="aspectFill"
+      ></image>
+      
+      <!-- 文章信息 -->
+      <view class="article-info">
+        <text class="article-title">{{ item.title }}</text>
+        <text class="article-summary text-ellipsis-2">{{ item.summary }}</text>
+        
+        <view class="article-meta">
+          <view class="meta-left">
+            <text class="category-tag">{{ item.categoryName }}</text>
+            <text class="view-count">👁️ {{ item.viewCount }}</text>
+          </view>
+          <view class="meta-right">
+            <text class="like-btn {{ item.isLiked ? 'liked' : '' }}" catchtap="handleLike" data-id="{{ item._id }}">
+              ❤️ {{ item.likeCount }}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-status" wx:if="{{ loading }}">
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-status" wx:if="{{ !loading && articles.length === 0 }}">
+      <text class="empty-icon">📚</text>
+      <text class="empty-text">暂无文章</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more-status" wx:if="{{ !loading && noMore && articles.length > 0 }}">
+      <text class="no-more-text">没有更多了</text>
+    </view>
+  </view>
+
+  <!-- Banner广告 -->
+  <view class="ad-section">
+    <ad unit-id="adunit-xxxxxxxxxxxxxxxx" ad-type="banner" ad-theme="white"></ad>
+  </view>
+</view>

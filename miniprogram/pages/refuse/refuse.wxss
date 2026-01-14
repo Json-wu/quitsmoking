@@ -1,0 +1,193 @@
+/* pages/refuse/refuse.wxss */
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #89B7FF 0%, #A5C7FF 50%, #6DA3FF 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 竖屏样式 */
+.container.portrait {
+  flex-direction: column;
+}
+
+/* 横屏样式 */
+.container.landscape {
+  flex-direction: row;
+}
+
+/* 拒烟内容 */
+.refuse-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.refuse-text {
+  font-size: 120rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.3);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.refuse-subtitle {
+  font-size: 48rpx;
+  font-weight: var(--font-medium);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* 横屏时调整字体大小 */
+.container.landscape .refuse-text {
+  font-size: 160rpx;
+}
+
+.container.landscape .refuse-subtitle {
+  font-size: 64rpx;
+}
+
+/* 操作提示 */
+.tip-overlay {
+  position: absolute;
+  bottom: 100rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tip-text {
+  font-size: var(--font-sm);
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+/* 关闭按钮 */
+.close-btn {
+  position: absolute;
+  top: 60rpx;
+  right: var(--spacing-md);
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  z-index: 100;
+}
+
+.close-icon {
+  font-size: 40rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* 自定义文字弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  width: 600rpx;
+  background-color: var(--bg-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: var(--spacing-lg);
+  text-align: center;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.modal-title {
+  font-size: var(--font-lg);
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: var(--spacing-lg);
+}
+
+.custom-input {
+  width: 100%;
+  min-height: 200rpx;
+  padding: var(--spacing-md);
+  background-color: var(--bg-gray);
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.char-count {
+  text-align: right;
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-xs);
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid var(--border-light);
+}
+
+.modal-button {
+  flex: 1;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  font-size: var(--font-md);
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.modal-button::after {
+  border: none;
+}
+
+.modal-button.cancel {
+  color: var(--text-secondary);
+  border-right: 1rpx solid var(--border-light);
+}
+
+.modal-button.confirm {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* 脉冲动画 */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}

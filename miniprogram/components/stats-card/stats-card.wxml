@@ -1,0 +1,12 @@
+<!--components/stats-card/stats-card.wxml-->
+<view class="stats-card {{ customClass }}">
+  <view class="card-icon">{{ icon }}</view>
+  <view class="card-content">
+    <text class="card-value">{{ value }}</text>
+    <text class="card-label">{{ label }}</text>
+  </view>
+  <view class="card-trend" wx:if="{{ trend }}">
+    <text class="trend-icon">{{ trend > 0 ? '↑' : '↓' }}</text>
+    <text class="trend-value">{{ Math.abs(trend) }}%</text>
+  </view>
+</view>
