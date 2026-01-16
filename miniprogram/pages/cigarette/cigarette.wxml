@@ -11,34 +11,39 @@
 
   <!-- 操作按钮区域 -->
   <view class="action-buttons">
-    <view class="button-row">
-      <button class="action-btn light-btn" bindtap="handleLight">
-        <text class="btn-icon">🔥</text>
-        <text class="btn-text">点火</text>
-      </button>
-      <button class="action-btn puff-btn" bindtap="handlePuff">
-        <text class="btn-icon">💨</text>
-        <text class="btn-text">吸一口</text>
-      </button>
-    </view>
-    <view class="button-row">
-      <button class="action-btn shake-btn" bindtap="handleShake">
-        <text class="btn-icon">🌪️</text>
-        <text class="btn-text">抖灰</text>
-      </button>
-      <button class="action-btn new-btn" bindtap="handleNew">
-        <text class="btn-icon">🚬</text>
-        <text class="btn-text">再来一根</text>
-      </button>
-    </view>
-  </view>
+    <!-- 点火按钮：未点火时显示 -->
+    <button wx:if="{{!isLit}}" class="action-btn light-btn" bindtap="handleLight">
+      <text class="btn-icon">🔥</text>
+      <text class="btn-text">点火</text>
+    </button>
 
-  <!-- 送烟按钮 -->
-  <view class="share-section">
+    <!-- 吸一口按钮：已点火后始终显示 -->
+    <button wx:if="{{isLit}}" class="action-btn puff-btn" bindtap="handlePuff">
+      <text class="btn-icon">💨</text>
+      <text class="btn-text">吸一口</text>
+    </button>
+
+    <!-- 抖灰按钮：已点火后始终显示 -->
+    <button wx:if="{{isLit}}" class="action-btn shake-btn" bindtap="handleShake">
+      <text class="btn-icon">🌪️</text>
+      <text class="btn-text">抖灰</text>
+    </button>
+
+    <!-- 再来一根按钮：已吸完6口时显示 -->
+    <button wx:if="{{totalPuffs >= maxPuffs}}" class="action-btn new-btn" bindtap="handleNew">
+      <text class="btn-icon">🚬</text>
+      <text class="btn-text">再来一根</text>
+    </button>
+      <!-- 送烟按钮：固定在底部，始终显示 -->
     <button class="share-btn" open-type="share">
       <text class="share-icon">🎁</text>
       <text class="share-text">送烟给好友</text>
     </button>
+  </view>
+
+  <!-- 提示文字：在送烟按钮上方 -->
+  <view class="tip-text">
+    <text class="text-sm text-secondary">摇一摇手机可以点火或抖灰哦</text>
   </view>
 
   <!-- 统计信息 -->
@@ -58,10 +63,5 @@
         <text class="stat-label">再来几根</text>
       </view>
     </view>
-  </view>
-
-  <!-- 提示文字 -->
-  <view class="tip-text">
-    <text class="text-sm text-secondary">摇一摇手机可以点火或抖灰哦</text>
   </view>
 </view>

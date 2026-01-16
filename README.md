@@ -240,40 +240,128 @@ REWARDED_VIDEO_AD_UNIT_ID: 'adunit-xxxxxxxxxxxxxxxx'
 ### users 用户表
 ```javascript
 {
-  _id: String,
-  _openid: String,
-  nickName: String,
-  avatarUrl: String,
-  quitDate: Date,           // 戒烟开始日期
-  dailyCigarettes: Number,  // 每日吸烟量
-  cigarettePrice: Number,   // 香烟价格
-  continuousDays: Number,   // 连续签到天数
-  totalCheckin: Number,     // 累计签到次数
-  makeUpCount: Number,      // 本月补签次数
-  createTime: Date,
-  updateTime: Date
+  _id: String,                             // 文档ID
+  _openid: String,                         // 微信用户唯一标识
+  nickName: String,                        // 用户昵称
+  avatarUrl: String,                       // 用户头像地址
+  quitDate: String,                        // 开始戒烟日期(YYYY-MM-DD)
+  dailyCigarettes: Number,                 // 戒烟前每日吸烟量(支)
+  cigarettePrice: Number,                  // 单包香烟价格(元)
+  cigarettesPerPack: Number,               // 每包香烟支数
+  makeUpCount: Number,                     // 本月剩余补签次数
+  lastResetMonth: String,                  // 上次重置补签次数的月份(YYYY-MM)
+  continuousDays: Number,                  // 连续签到天数
+  totalCheckin: Number,                    // 累计签到次数
+  settings: {                              // 用户设置
+    reminderEnabled: Boolean,              // 是否开启签到提醒
+    reminderTime: String,                  // 提醒时间
+    showInRanking: Boolean                 // 是否在排行榜显示
+  },
+  createTime: Date,                        // 创建时间
+  updateTime: Date                         // 更新时间
 }
 ```
 
 ### checkins 签到表
 ```javascript
 {
-  _id: String,
-  _openid: String,
-  date: String,             // 签到日期 YYYY-MM-DD
-  isMakeUp: Boolean,        // 是否补签
-  createTime: Date
+  _id: String,                             // 文档ID
+  _openid: String,                         // 用户唯一标识
+  date: String,                            // 签到日期(YYYY-MM-DD)
+  timestamp: Number,                       // 签到时间戳(毫秒)
+  isMakeUp: Boolean,                       // 是否为补签(true:补签, false:正常签到)
+  continuousDays: Number,                  // 签到时的连续天数
+  totalDays: Number,                       // 签到时的累计天数
+  createTime: Date                         // 创建时间
+}
+```
+
+### cigarettes 电子烟记录表
+```javascript
+{
+  _id: String,                             // 文档ID
+  _openid: String,                         // 用户唯一标识
+  date: String,                            // 记录日期(YYYY-MM-DD)
+  puffCount: Number,                       // 吸一口次数
+  shakeCount: Number,                      // 抖灰次数(摇一摇)
+  newCigaretteCount: Number,               // 再来一根次数
+  shareCount: Number,                      // 分享次数
+  totalDuration: Number,                   // 总使用时长(秒)
+  createTime: Date,                        // 创建时间
+  updateTime: Date                         // 更新时间
 }
 ```
 
 ### certificates 证书表
 ```javascript
 {
-  _id: String,
-  _openid: String,
-  level: String,            // 证书等级
-  quitDays: Number,         // 戒烟天数
-  createTime: Date
+  _id: String,                             // 文档ID
+  _openid: String,                         // 用户唯一标识
+  days: Number,                            // 戒烟天数
+  level: String,                           // 证书等级(beginner/intermediate/advanced/expert/master)
+  levelName: String,                       // 证书等级名称
+  imageUrl: String,                        // 证书图片云存储地址
+  savedMoney: Number,                      // 节省金额(元)
+  savedCigarettes: Number,                 // 少吸香烟数(支)
+  healthIndex: Number,                     // 健康指数(0-100)
+  createTime: Date                         // 生成时间
+}
+```
+
+### articles 文章表
+```javascript
+{
+  _id: String,                             // 文档ID
+  title: String,                           // 文章标题
+  category: String,                        // 文章分类(scientific/psychology/lifestyle/coping)
+  categoryName: String,                    // 分类名称
+  summary: String,                         // 文章摘要(150字以内)
+  content: String,                         // 文章内容(富文本HTML)
+  coverImage: String,                      // 封面图片云存储地址
+  author: String,                          // 作者
+  tags: Array,                             // 标签数组
+  viewCount: Number,                       // 浏览次数
+  likeCount: Number,                       // 点赞次数
+  collectCount: Number,                    // 收藏次数
+  status: String,                          // 状态(draft:草稿, published:已发布, archived:已归档)
+  publishTime: Date,                       // 发布时间
+  createTime: Date,                        // 创建时间
+  updateTime: Date                         // 更新时间
+}
+```
+
+### collections 用户收藏表
+```javascript
+{
+  _id: String,                             // 文档ID
+  _openid: String,                         // 用户唯一标识
+  articleId: String,                       // 文章ID
+  articleTitle: String,                    // 文章标题(冗余字段,便于查询)
+  createTime: Date                         // 收藏时间
+}
+```
+
+### likes 点赞表
+```javascript
+{
+  _id: String,                             // 文档ID
+  _openid: String,                         // 用户唯一标识
+  articleId: String,                       // 文章ID
+  createTime: Date                         // 点赞时间
+}
+```
+
+### badges 勋章记录表
+```javascript
+{
+  _id: String,                             // 文档ID
+  _openid: String,                         // 用户唯一标识
+  badgeType: String,                       // 勋章类型(唯一标识)
+  badgeName: String,                       // 勋章名称
+  days: Number,                            // 解锁所需天数
+  icon: String,                            // 勋章图标(emoji)
+  description: String,                     // 勋章描述
+  unlockTime: Date                         // 解锁时间
 }
 ```
 

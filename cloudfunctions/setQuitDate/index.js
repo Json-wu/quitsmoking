@@ -35,7 +35,7 @@ exports.main = async (event, context) => {
       _openid: wxContext.OPENID
     }).update({
       data: {
-        quitDate: quitDateObj,
+        quitDate: quitDateObj.toISOString().slice(0, 10),
         updateTime: db.serverDate()
       }
     });

@@ -146,7 +146,7 @@
 
 .day-status {
   position: absolute;
-  top: 4rpx;
+  bottom: 4rpx;
   right: 4rpx;
 }
 
@@ -167,6 +167,27 @@
 .makeup-icon {
   font-size: 18rpx;
   color: #FFFFFF;
+}
+
+/* 戒烟日期标记 - 圆形标识 */
+.day-quit {
+  position: absolute;
+  top: 2rpx;
+  right: 2rpx;
+  width: 28rpx;
+  height: 28rpx;
+  background-color: #FF6B6B;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quit-icon {
+  font-size: 16rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+  line-height: 1;
 }
 
 /* 补签说明 */

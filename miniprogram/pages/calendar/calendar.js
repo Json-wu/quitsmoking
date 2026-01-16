@@ -15,16 +15,22 @@ Page({
     totalCheckin: 0,
     makeUpCount: 3,
     showMakeUpModal: false,
-    selectedDate: ''
+    selectedDate: '',
+    quitDate: ''  // 戒烟开始日期
   },
 
   onLoad(options) {
     const today = new Date();
     this.setData({
       currentYear: today.getFullYear(),
-      currentMonth: today.getMonth() + 1
+      currentMonth: today.getMonth() + 1,
+      quitDate: app.globalData.quitDate || ''  // 获取戒烟日期
     });
 
+    // 第1步：立即生成基础日历
+    this.generateBaseCalendar();
+    
+    // 第2步和第3步：加载数据并标记
     this.loadData();
   },
 
@@ -47,16 +53,22 @@ Page({
         this.data.currentMonth
       );
 
+      console.log('签到记录:', result);
       if (result.success) {
         this.setData({
           checkinRecords: result.records || [],
-          continuousDays: result.continuousDays || 0,
-          totalCheckin: result.totalCheckin || 0,
+          continuousDays: app.globalData.currentStreak || 0,
+          totalCheckin: app.globalData.totalCheckin || 0,
           makeUpCount: result.makeUpCount || 0
         });
 
-        // 生成日历
-        this.generateCalendarData();
+        // 第2步：标记签到日期
+        this.markCheckinDays();
+        
+        // 第3步：延迟标记戒烟日期（让签到标记先显示）
+        setTimeout(() => {
+          this.markQuitDays();
+        }, 100);
       }
     } catch (err) {
       console.error('加载数据失败:', err);
@@ -70,19 +82,31 @@ Page({
   },
 
   /**
-   * 生成日历数据
+   * 第1步：生成基础日历（立即执行）
    */
-  generateCalendarData() {
-    const { currentYear, currentMonth, checkinRecords } = this.data;
+  generateBaseCalendar() {
+    const { currentYear, currentMonth } = this.data;
     
-    // 生成日历
+    // 生成基础日历结构
     const calendar = generateCalendar(currentYear, currentMonth);
     
+    this.setData({
+      calendarDays: calendar
+    });
+  },
+
+  /**
+   * 第2步：标记签到日期（异步）
+   */
+  markCheckinDays() {
+    const { calendarDays, checkinRecords } = this.data;
+    
     // 标记签到日期
-    const calendarDays = calendar.map(day => {
+    const updatedDays = calendarDays.map(day => {
       if (!day.isCurrentMonth) return day;
 
       const record = checkinRecords.find(r => r.date === day.dateString);
+      
       return {
         ...day,
         isChecked: !!record,
@@ -91,11 +115,46 @@ Page({
     });
 
     // 计算本月签到天数
-    const monthCheckin = calendarDays.filter(d => d.isCurrentMonth && d.isChecked).length;
+    const monthCheckin = updatedDays.filter(d => d.isCurrentMonth && d.isChecked).length;
 
     this.setData({
-      calendarDays,
+      calendarDays: updatedDays,
       monthCheckin
+    });
+  },
+
+  /**
+   * 第3步：标记戒烟日期（异步）
+   */
+  markQuitDays() {
+    const { calendarDays, quitDate } = this.data;
+    
+    if (!quitDate) return;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // 标记戒烟日期
+    const updatedDays = calendarDays.map(day => {
+      if (!day.isCurrentMonth || !day.dateString) return day;
+      
+      const quitDateObj = new Date(quitDate);
+      const currentDateObj = new Date(day.dateString);
+      quitDateObj.setHours(0, 0, 0, 0);
+      currentDateObj.setHours(0, 0, 0, 0);
+      
+      // 判断是否在戒烟日期范围内：戒烟开始日期 <= 当前日期 <= 今天
+      const isAfterQuitDate = currentDateObj >= quitDateObj;
+      const isBeforeToday = currentDateObj <= today;
+      
+      return {
+        ...day,
+        isQuitDay: isAfterQuitDate && isBeforeToday
+      };
+    });
+
+    this.setData({
+      calendarDays: updatedDays
     });
   },
 
@@ -116,6 +175,10 @@ Page({
       currentMonth
     });
 
+    // 重新生成基础日历
+    this.generateBaseCalendar();
+    
+    // 加载数据并标记
     this.loadData();
   },
 
@@ -147,6 +210,10 @@ Page({
       currentMonth
     });
 
+    // 重新生成基础日历
+    this.generateBaseCalendar();
+    
+    // 加载数据并标记
     this.loadData();
   },
 

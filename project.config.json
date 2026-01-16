@@ -58,5 +58,6 @@
   "cloudfunctionRoot": "cloudfunctions/",
   "miniprogramRoot": "miniprogram/",
   "srcMiniprogramRoot": "miniprogram/",
-  "simulatorPluginLibVersion": {}
+  "simulatorPluginLibVersion": {},
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
 }

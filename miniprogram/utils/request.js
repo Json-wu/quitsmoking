@@ -4,7 +4,7 @@
  * 调用云函数
  * @param {String} name - 云函数名称
  * @param {Object} data - 请求数据
- * @returns {Promise} 云函数返回结果
+ * @returns {Promise} 云函数返回完整响应对象
  */
 const callFunction = (name, data = {}) => {
   return new Promise((resolve, reject) => {
@@ -12,10 +12,11 @@ const callFunction = (name, data = {}) => {
       name,
       data,
       success: (res) => {
-        if (res.result) {
-          resolve(res.result);
+        console.log(`云函数${name}返回:`, res);
+        if (res.errMsg === 'cloud.callFunction:ok') {
+          resolve(res);
         } else {
-          reject(new Error('云函数返回数据格式错误'));
+          reject(new Error(res.errMsg || '云函数调用失败'));
         }
       },
       fail: (err) => {

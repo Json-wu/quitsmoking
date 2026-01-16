@@ -21,6 +21,7 @@ exports.main = async (event, context) => {
       _openid: openid
     }).get();
 
+    console.log('获取用户统计:', users);
     if (users.length === 0) {
       return {
         success: false,
@@ -30,22 +31,6 @@ exports.main = async (event, context) => {
 
     const user = users[0];
 
-    // 计算戒烟天数
-    let quitDays = 0;
-    if (user.quitDate) {
-      const quitDate = new Date(user.quitDate);
-      const today = new Date();
-      quitDays = Math.floor((today - quitDate) / (1000 * 60 * 60 * 24));
-    }
-
-    // 获取签到统计
-    const { data: checkins } = await db.collection('checkins').where({
-      _openid: openid
-    }).orderBy('date', 'desc').limit(1).get();
-
-    const continuousCheckin = checkins.length > 0 ? checkins[0].continuousDays : 0;
-    const totalCheckin = checkins.length > 0 ? checkins[0].totalDays : 0;
-
     // 获取今日签到状态
     const today = new Date().toISOString().slice(0, 10);
     const { data: todayCheckin } = await db.collection('checkins').where({
@@ -53,9 +38,37 @@ exports.main = async (event, context) => {
       date: today
     }).get();
 
-    const hasCheckedToday = todayCheckin.length > 0;
+    const hasCheckedToday = (todayCheckin?.length || 0) > 0;
 
-    // 计算健康收益
+    // 获取签到统计（从最新的签到记录获取）
+    const { data: checkins } = await db.collection('checkins').where({
+      _openid: openid
+    }).orderBy('date', 'desc').limit(1).get();
+
+    let continuousCheckin = 0;
+    let totalCheckin = 0;
+
+    if (checkins && checkins.length > 0) {
+      continuousCheckin = checkins[0].continuousDays;
+      totalCheckin = checkins[0].totalDays;
+    }
+
+    // 计算戒烟天数：基于戒烟开始日期
+    // 当天也算1天，所以需要 +1
+    let quitDays = 0;
+    if (user.quitDate) {
+      const quitDate = new Date(user.quitDate);
+      const now = new Date();
+      // 将时间设置为0点，只比较日期
+      quitDate.setHours(0, 0, 0, 0);
+      now.setHours(0, 0, 0, 0);
+      // 计算天数差，+1 表示包含当天
+      quitDays = Math.floor((now - quitDate) / (1000 * 60 * 60 * 24)) + 1;
+      // 确保天数不小于0
+      if (quitDays < 0) quitDays = 0;
+    }
+
+    // 计算健康收益（基于戒烟天数）
     const savedCigarettes = quitDays * user.dailyCigarettes;
     const savedMoney = ((savedCigarettes / user.cigarettesPerPack) * user.cigarettePrice).toFixed(2);
     const healthIndex = Math.min(100, Math.floor(quitDays / 3.65));
@@ -69,10 +82,9 @@ exports.main = async (event, context) => {
     // 获取电子烟统计
     const { data: cigaretteStats } = await db.collection('cigarettes').where({
       _openid: openid,
-      date: today
     }).get();
 
-    const cigaretteCount = cigaretteStats.length > 0 ? cigaretteStats[0].puffCount : 0;
+    const cigaretteCount = (cigaretteStats?.length || 0) > 0 ? cigaretteStats[0].puffCount : 0;
 
     return {
       success: true,

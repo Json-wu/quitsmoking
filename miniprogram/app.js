@@ -1,4 +1,6 @@
 // app.js
+const dbInit = require('./utils/dbInit');
+
 App({
   /**
    * 全局数据
@@ -13,7 +15,8 @@ App({
     hasCheckedToday: false,      // 今日是否已签到
     makeUpCount: 3,              // 剩余补签次数
     isLogin: false,              // 登录状态
-    cloudEnvId: 'your-env-id'    // 云开发环境ID
+    cloudEnvId: 'cloud1-5g9hlytr7a58a6f7',    // 云开发环境ID
+    dbInitialized: true         // 数据库是否已初始化
   },
 
   /**
@@ -24,6 +27,9 @@ App({
     
     // 初始化云开发
     this.initCloud();
+    
+    // 检查数据库
+    this.checkDatabase();
     
     // 检查登录状态
     this.checkLogin();
@@ -70,16 +76,84 @@ App({
   },
 
   /**
+   * 检查数据库集合
+   */
+  async checkDatabase() {
+    try {
+      console.log('开始检查数据库集合...');
+      
+      // 检查数据库集合是否存在（不显示弹窗）
+      const isInitialized = await dbInit.initDBCheck(false);
+      this.globalData.dbInitialized = isInitialized;
+      
+      if (!isInitialized) {
+        console.warn('数据库未完全初始化，尝试自动初始化...');
+        
+        // 尝试调用云函数自动初始化数据库
+        try {
+          const res = await wx.cloud.callFunction({
+            name: 'initDB'
+          });
+          
+          console.log('数据库初始化结果:', res);
+          
+          if (res.errMsg === 'cloud.callFunction:ok' && res.result?.success) {
+            this.globalData.dbInitialized = true;
+            console.log('✓ 数据库自动初始化成功');
+            
+            wx.showToast({
+              title: '数据库初始化成功',
+              icon: 'success'
+            });
+          } else {
+            console.error('数据库初始化失败:', res.result);
+            this.showDBInitError();
+          }
+        } catch (err) {
+          console.error('调用数据库初始化云函数失败:', err);
+          this.showDBInitError();
+        }
+      } else {
+        console.log('✓ 数据库检查通过');
+      }
+    } catch (err) {
+      console.error('数据库检查异常:', err);
+    }
+  },
+
+  /**
+   * 显示数据库初始化错误
+   */
+  showDBInitError() {
+    wx.showModal({
+      title: '数据库未初始化',
+      content: '数据库集合未创建或初始化失败。\n\n请联系管理员在云开发控制台创建必需的数据库集合，或部署并运行 initDB 云函数。',
+      showCancel: false,
+      confirmText: '我知道了'
+    });
+  },
+
+  /**
    * 检查登录状态
    */
   async checkLogin() {
     try {
       // 调用云函数登录
-      const { result } = await wx.cloud.callFunction({
+      const res = await wx.cloud.callFunction({
         name: 'login'
       });
 
-      if (result.success) {
+      console.log('login云函数返回:', res);
+
+      if (!res.result) {
+        console.error('登录失败: 云函数返回结果为空，请检查云函数是否已部署');
+        this.showLoginError();
+        return;
+      }
+
+      const { result } = res;
+
+      if (res.errMsg === 'cloud.callFunction:ok') {
         this.globalData.openid = result.openid;
         this.globalData.isLogin = true;
         console.log('登录成功, openid:', result.openid);
@@ -87,7 +161,7 @@ App({
         // 加载用户数据
         await this.loadUserData();
       } else {
-        console.error('登录失败:', result.message);
+        console.error('登录失败:', result.message || '未知错误');
         this.showLoginError();
       }
     } catch (err) {
@@ -99,15 +173,26 @@ App({
   /**
    * 加载用户数据
    */
-  async loadUserData() {
+  async loadUserData(showLoading = true) {
     try {
-      wx.showLoading({ title: '加载中...' });
+      if (showLoading) {
+        wx.showLoading({ title: '加载中...' });
+      }
 
-      const { result } = await wx.cloud.callFunction({
+      const res = await wx.cloud.callFunction({
         name: 'getUserStats'
       });
 
-      if (result.success) {
+      console.log('getUserStats云函数返回:', res);
+
+      if (!res.result) {
+        console.error('加载用户数据失败: 云函数返回结果为空，请检查云函数是否已部署');
+        return;
+      }
+
+      const { result } = res;
+
+      if (res.errMsg === 'cloud.callFunction:ok') {
         // 更新全局数据
         this.globalData.userInfo = result.userInfo;
         this.globalData.quitDate = result.quitDate;
@@ -119,12 +204,14 @@ App({
 
         console.log('用户数据加载成功');
       } else {
-        console.error('加载用户数据失败:', result.message);
+        console.error('加载用户数据失败:', result.message || '未知错误');
       }
     } catch (err) {
       console.error('加载用户数据异常:', err);
     } finally {
-      wx.hideLoading();
+      if (showLoading) {
+        wx.hideLoading();
+      }
     }
   },
 
@@ -224,11 +311,14 @@ App({
    */
   async refreshCheckinStatus() {
     try {
-      const { result } = await wx.cloud.callFunction({
+      const res = await wx.cloud.callFunction({
         name: 'getUserStats'
       });
 
-      if (result.success) {
+      console.log('refreshCheckinStatus云函数返回:', res);
+
+      if (res.errMsg === 'cloud.callFunction:ok' && res.result) {
+        const result = res.result;
         this.globalData.hasCheckedToday = result.hasCheckedToday;
         this.globalData.currentStreak = result.continuousCheckin;
         this.globalData.totalCheckin = result.totalCheckin;

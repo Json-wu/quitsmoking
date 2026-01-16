@@ -62,6 +62,7 @@ class CigaretteService {
    * @returns {Object} 分享配置
    */
   shareCigarette() {
+    this.recordShare();
     return {
       title: '给你送了一根电子烟，快来试试吧！',
       path: '/pages/cigarette/cigarette',

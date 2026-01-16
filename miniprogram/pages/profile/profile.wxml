@@ -1,7 +1,7 @@
 <!--pages/profile/profile.wxml-->
 <view class="container">
   <!-- 用户信息区域 -->
-  <view class="user-section card">
+  <!--<view class="user-section card">
     <view class="user-info">
       <image class="avatar" src="{{ userInfo.avatarUrl || '/assets/images/default-avatar.png' }}" mode="aspectFill"></image>
       <view class="user-detail">
@@ -12,7 +12,7 @@
         </view>
       </view>
     </view>
-  </view>
+  </view>-->
 
   <!-- 数据统计 -->
   <view class="stats-section">

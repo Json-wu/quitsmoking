@@ -91,18 +91,18 @@ Page({
     try {
       wx.showLoading({ title: '设置中...' });
 
-      const result = await userService.setQuitDate(this.data.tempQuitDate);
+      const res = await userService.setQuitDate(this.data.tempQuitDate);
 
-      if (result.success) {
+      if (res?.result?.success) {
         app.globalData.quitDate = this.data.tempQuitDate;
         this.setData({
           quitDate: this.data.tempQuitDate,
           showDatePicker: false
         });
-
+      }else{
         wx.showToast({
-          title: '设置成功',
-          icon: 'success'
+          title: '设置失败',
+          icon: 'none'
         });
       }
     } catch (err) {
@@ -263,6 +263,7 @@ Page({
       const settings = {
         dailyCigarettes: parseInt(this.data.dailyCigarettes) || 20,
         cigarettePrice: parseFloat(this.data.cigarettePrice) || 15,
+        cigarettesPerPack: 20, // 每包香烟支数
         checkinReminder: this.data.checkinReminder,
         reminderTime: this.data.reminderTime,
         showInRanking: this.data.showInRanking,
@@ -273,18 +274,40 @@ Page({
       setStorageSync('userSettings', settings);
 
       // 保存到云端
-      const result = await userService.updateUserSettings(settings);
+      const res = await userService.updateSettings(settings);
 
-      if (result.success) {
+      if (res?.result?.success) {
+        // 更新全局数据中的用户设置
+        if (!app.globalData.userInfo) {
+          app.globalData.userInfo = {};
+        }
+        app.globalData.userInfo.dailyCigarettes = settings.dailyCigarettes;
+        app.globalData.userInfo.cigarettePrice = settings.cigarettePrice;
+        app.globalData.userInfo.cigarettesPerPack = settings.cigarettesPerPack;
+
+        // 重新加载用户数据，刷新统计信息
+        await app.loadUserData(false);
+
         wx.showToast({
           title: '保存成功',
-          icon: 'success'
+          icon: 'success',
+          duration: 1500
+        });
+
+        // 延迟返回，让用户看到成功提示
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 1500);
+      } else {
+        wx.showToast({
+          title: '保存失败',
+          icon: 'none'
         });
       }
     } catch (err) {
       console.error('保存失败:', err);
       wx.showToast({
-        title: '保存失败',
+        title: '保存失败，请重试',
         icon: 'none'
       });
     } finally {

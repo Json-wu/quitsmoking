@@ -6,7 +6,7 @@ Page({
   data: {
     userInfo: {},
     badgeLevel: '初级戒烟者',
-    totalCheckin: 0,
+    totalCheckin: app.globalData.totalCheckin || 0,
     cigaretteCount: 0,
     shareCount: 0,
     badgeCount: 0,
@@ -46,13 +46,18 @@ Page({
       const globalData = app.globalData;
       
       // 获取用户统计
-      const statsResult = await userService.getUserStats();
+      const statsResponse = await userService.getUserStats();
+      const statsResult = statsResponse.result || {};
       
       // 获取勋章列表
-      const badgesResult = await userService.getBadges();
+      const badgesResponse = await userService.getBadges();
+      const badgesResult = badgesResponse.result || {};
+
+      console.log('用户统计数据:', statsResult);
+      console.log('勋章数据:', badgesResult);
 
       // 计算勋章等级
-      const badgeLevel = this.calculateBadgeLevel(globalData.quitDays);
+      const badgeLevel = this.calculateBadgeLevel(statsResult.quitDays || globalData.quitDays || 0);
 
       // 初始化勋章数据
       const badges = this.initBadges(badgesResult.badges || []);
@@ -60,7 +65,6 @@ Page({
       this.setData({
         userInfo: globalData.userInfo || {},
         badgeLevel,
-        totalCheckin: statsResult.totalCheckin || 0,
         cigaretteCount: statsResult.cigaretteCount || 0,
         shareCount: statsResult.shareCount || 0,
         badgeCount: badgesResult.badges?.length || 0,

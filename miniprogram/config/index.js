@@ -2,7 +2,7 @@
 
 module.exports = {
   // 云开发环境ID
-  cloudEnvId: 'your-env-id',
+  cloudEnvId: 'cloud1-5g9hlytr7a58a6f7',
 
   // 小程序信息
   appInfo: {

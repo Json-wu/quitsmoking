@@ -43,8 +43,9 @@ class CheckinService {
    */
   async getCheckinRecords(year, month) {
     try {
-      const result = await callFunction('getCheckinRecords', { year, month });
-      return result;
+      const res = await callFunction('getCheckinRecords', { year, month });
+      console.log('获取签到记录:', res.result);
+      return res.result;  // 返回res.result而不是res
     } catch (err) {
       console.error('获取签到记录失败:', err);
       throw err;

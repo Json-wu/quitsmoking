@@ -97,11 +97,19 @@ const generateCalendar = (year, month) => {
   const calendar = [];
 
   // 补充上月的日期
-  for (let i = 0; i < firstDay; i++) {
-    calendar.push({
-      date: 0,
-      isCurrentMonth: false
-    });
+  if (firstDay > 0) {
+    const prevMonth = month === 1 ? 12 : month - 1;
+    const prevYear = month === 1 ? year - 1 : year;
+    const prevMonthDays = getDaysInMonth(prevYear, prevMonth);
+    
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const date = prevMonthDays - i;
+      calendar.push({
+        date: date,
+        dateString: `${prevYear}-${String(prevMonth).padStart(2, '0')}-${String(date).padStart(2, '0')}`,
+        isCurrentMonth: false
+      });
+    }
   }
 
   // 当月的日期
@@ -114,13 +122,22 @@ const generateCalendar = (year, month) => {
     });
   }
 
-  // 补充下月的日期
-  const remainingDays = 42 - calendar.length; // 6行7列
-  for (let i = 1; i <= remainingDays; i++) {
-    calendar.push({
-      date: i,
-      isCurrentMonth: false
-    });
+  // 补充下月的日期（只补充到第5周结束，如果第6周没有当月日期则不显示）
+  const currentLength = calendar.length;
+  const needRows = currentLength <= 35 ? 35 : 42; // 5行或6行
+  const remainingDays = needRows - currentLength;
+  
+  if (remainingDays > 0) {
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    
+    for (let i = 1; i <= remainingDays; i++) {
+      calendar.push({
+        date: i,
+        dateString: `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`,
+        isCurrentMonth: false
+      });
+    }
   }
 
   return calendar;
