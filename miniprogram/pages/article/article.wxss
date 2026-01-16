@@ -124,6 +124,7 @@
 .stat-text {
   font-size: var(--font-md);
   color: var(--text-secondary);
+  margin-left: 6rpx;
 }
 
 .interaction-buttons {

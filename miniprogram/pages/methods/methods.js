@@ -7,9 +7,9 @@ Page({
     categories: [
       { id: 'all', name: '全部' },
       { id: 'scientific', name: '科学戒烟' },
-      { id: 'psychological', name: '心理调节' },
+      { id: 'psychology', name: '心理调节' },
       { id: 'lifestyle', name: '生活习惯' },
-      { id: 'skills', name: '应对技巧' }
+      { id: 'coping', name: '应对技巧' }
     ],
     articles: [],
     page: 1,
@@ -63,11 +63,15 @@ Page({
     try {
       this.setData({ loading: true });
 
+      console.log('加载文章，分类:', this.data.currentCategory, '页码:', this.data.page);
+
       const result = await articleService.getArticleList({
         category: this.data.currentCategory,
         page: this.data.page,
         pageSize: this.data.pageSize
       });
+
+      console.log('文章加载结果:', result);
 
       if (result.success) {
         const articles = result.articles.map(item => ({
@@ -75,15 +79,29 @@ Page({
           categoryName: this.getCategoryName(item.category)
         }));
 
+        console.log('处理后的文章列表:', articles);
+
         this.setData({
           articles: this.data.page === 1 ? articles : [...this.data.articles, ...articles],
           noMore: articles.length < this.data.pageSize
+        });
+
+        if (articles.length === 0 && this.data.page === 1) {
+          wx.showToast({
+            title: '暂无文章数据',
+            icon: 'none'
+          });
+        }
+      } else {
+        wx.showToast({
+          title: result.message || '加载失败',
+          icon: 'none'
         });
       }
     } catch (err) {
       console.error('加载文章失败:', err);
       wx.showToast({
-        title: '加载失败',
+        title: '加载失败，请重试',
         icon: 'none'
       });
     } finally {
@@ -127,13 +145,24 @@ Page({
   },
 
   /**
-   * 点赞文章
+   * 点赞/取消点赞文章
    */
   async handleLike(e) {
     const { id } = e.currentTarget.dataset;
     
+    // 找到当前文章
+    const article = this.data.articles.find(item => item._id === id);
+    if (!article) return;
+
     try {
-      const result = await articleService.likeArticle(id);
+      let result;
+      
+      // 根据当前状态调用不同的接口
+      if (article.isLiked) {
+        result = await articleService.unlikeArticle(id);
+      } else {
+        result = await articleService.likeArticle(id);
+      }
       
       if (result.success) {
         // 更新文章列表中的点赞状态
@@ -152,11 +181,21 @@ Page({
 
         wx.showToast({
           title: result.message || '操作成功',
-          icon: 'success'
+          icon: 'success',
+          duration: 1500
+        });
+      } else {
+        wx.showToast({
+          title: result.message || '操作失败',
+          icon: 'none'
         });
       }
     } catch (err) {
-      console.error('点赞失败:', err);
+      console.error('点赞操作失败:', err);
+      wx.showToast({
+        title: '操作失败，请重试',
+        icon: 'none'
+      });
     }
   },
 

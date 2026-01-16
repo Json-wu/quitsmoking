@@ -71,6 +71,7 @@
   height: 360rpx;
   display: block;
   background-color: var(--bg-gray);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .article-info {
@@ -98,42 +99,118 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 .meta-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  flex-shrink: 0;
 }
 
 .category-tag {
   display: inline-block;
-  padding: 4rpx 12rpx;
-  background-color: rgba(137, 183, 255, 0.1);
+  padding: 6rpx 16rpx;
+  background: linear-gradient(135deg, rgba(137, 183, 255, 0.15), rgba(137, 183, 255, 0.08));
   color: var(--primary-color);
-  font-size: var(--font-xs);
-  border-radius: 8rpx;
-}
-
-.view-count {
-  font-size: var(--font-xs);
-  color: var(--text-tertiary);
+  font-size: 22rpx;
+  font-weight: 500;
+  border-radius: 12rpx;
+  white-space: nowrap;
 }
 
 .meta-right {
   display: flex;
   align-items: center;
+  gap: 20rpx;
+  flex-shrink: 0;
 }
 
-.like-btn {
-  font-size: var(--font-sm);
-  color: var(--text-tertiary);
-  padding: 8rpx 16rpx;
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  background-color: var(--bg-gray);
   transition: all var(--transition-base);
 }
 
-.like-btn.liked {
+.view-item {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.like-item {
+  background-color: rgba(255, 92, 92, 0.08);
+}
+
+.like-item:active {
+  transform: scale(0.95);
+}
+
+.like-item.liked {
+  background-color: rgba(255, 92, 92, 0.15);
+}
+
+.meta-item .icon {
+  font-size: 28rpx;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.view-item .icon {
+  opacity: 0.6;
+}
+
+.like-item .icon {
+  animation: heartBeat 0.3s ease;
+}
+
+.like-item.liked .icon {
+  animation: heartPulse 0.6s ease;
+}
+
+.meta-item .count {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1;
+  min-width: 32rpx;
+  text-align: left;
+  margin-left: 6rpx;
+}
+
+.like-item.liked .count {
   color: var(--danger-color);
+  font-weight: 600;
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes heartPulse {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* 加载状态 */

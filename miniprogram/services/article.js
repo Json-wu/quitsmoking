@@ -11,12 +11,13 @@ class ArticleService {
   async getArticleList(params = {}) {
     try {
       const { category = 'all', page = 1, pageSize = 10 } = params;
-      const result = await callFunction('getArticles', {
+      const res = await callFunction('getArticles', {
         category,
         page,
         pageSize
       });
-      return result;
+      console.log('获取文章列表结果:', res);
+      return res.result;
     } catch (err) {
       console.error('获取文章列表失败:', err);
       throw err;
@@ -30,8 +31,8 @@ class ArticleService {
    */
   async getArticleDetail(articleId) {
     try {
-      const result = await callFunction('getArticleDetail', { articleId });
-      return result;
+      const res = await callFunction('getArticleDetail', { articleId });
+      return res.result;
     } catch (err) {
       console.error('获取文章详情失败:', err);
       throw err;
@@ -45,8 +46,8 @@ class ArticleService {
    */
   async collectArticle(articleId) {
     try {
-      const result = await callFunction('collectArticle', { articleId });
-      return result;
+      const res = await callFunction('collectArticle', { articleId });
+      return res.result;
     } catch (err) {
       console.error('收藏文章失败:', err);
       throw err;
@@ -60,8 +61,8 @@ class ArticleService {
    */
   async uncollectArticle(articleId) {
     try {
-      const result = await callFunction('uncollectArticle', { articleId });
-      return result;
+      const res = await callFunction('uncollectArticle', { articleId });
+      return res.result;
     } catch (err) {
       console.error('取消收藏失败:', err);
       throw err;
@@ -75,10 +76,25 @@ class ArticleService {
    */
   async likeArticle(articleId) {
     try {
-      const result = await callFunction('likeArticle', { articleId });
-      return result;
+      const res = await callFunction('likeArticle', { articleId });
+      return res.result;
     } catch (err) {
       console.error('点赞文章失败:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * 取消点赞文章
+   * @param {String} articleId - 文章ID
+   * @returns {Promise} 取消点赞结果
+   */
+  async unlikeArticle(articleId) {
+    try {
+      const res = await callFunction('unlikeArticle', { articleId });
+      return res.result;
+    } catch (err) {
+      console.error('取消收藏失败:', err);
       throw err;
     }
   }
@@ -91,11 +107,11 @@ class ArticleService {
    */
   async getCollectionList(page = 1, pageSize = 10) {
     try {
-      const result = await callFunction('getCollectionList', {
+      const res = await callFunction('getCollectionList', {
         page,
         pageSize
       });
-      return result;
+      return res.result;
     } catch (err) {
       console.error('获取收藏列表失败:', err);
       throw err;

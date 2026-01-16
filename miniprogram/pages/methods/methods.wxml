@@ -42,12 +42,16 @@
         <view class="article-meta">
           <view class="meta-left">
             <text class="category-tag">{{ item.categoryName }}</text>
-            <text class="view-count">👁️ {{ item.viewCount }}</text>
           </view>
           <view class="meta-right">
-            <text class="like-btn {{ item.isLiked ? 'liked' : '' }}" catchtap="handleLike" data-id="{{ item._id }}">
-              ❤️ {{ item.likeCount }}
-            </text>
+            <view class="meta-item">
+              <text class="icon">👁</text>
+              <text class="count">{{ item.viewCount }}</text>
+            </view>
+            <view class="meta-item" catchtap="handleLike" data-id="{{ item._id }}">
+              <text class="icon">{{ item.isLiked ? '❤️' : '🤍' }}</text>
+              <text class="count">{{ item.likeCount }}</text>
+            </view>
           </view>
         </view>
       </view>

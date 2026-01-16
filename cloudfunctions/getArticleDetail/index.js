@@ -29,7 +29,7 @@ exports.main = async (event, context) => {
         message: '文章不存在'
       };
     }
-
+console.log('获取文章详情结果:', articleResult);
     const article = articleResult.data;
 
     // 增加浏览量
