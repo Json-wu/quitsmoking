@@ -18,7 +18,13 @@ Page({
     recommendArticles: [],    // 推荐文章
     showDatePicker: false,    // 显示日期选择器
     today: '',                // 今天日期
-    userInfo: null            // 用户信息
+    userInfo: null,            // 用户信息
+    categories: {
+      'scientific': '科学戒烟',
+      'psychology': '心理调节',
+      'lifestyle': '生活习惯',
+      'coping': '应对技巧'
+    },
   },
 
   /**

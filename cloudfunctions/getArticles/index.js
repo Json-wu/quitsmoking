@@ -10,7 +10,7 @@ const _ = db.command;
 
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
-  const { category = 'all', page = 1, pageSize = 10 } = event;
+  const { category = 'all', page = 1, pageSize = 10, aIds } = event;
 
   try {
     // 构建查询条件
@@ -20,6 +20,10 @@ exports.main = async (event, context) => {
 
     if (category && category !== 'all') {
       where.category = category;
+    }
+
+    if (aIds && aIds.length > 0) {
+      where._id = _.in(aIds);
     }
 
     // 计算跳过数量

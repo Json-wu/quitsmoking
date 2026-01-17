@@ -192,7 +192,7 @@ App({
 
       const { result } = res;
 
-      if (res.errMsg === 'cloud.callFunction:ok') {
+      if (result.success) {
         // 更新全局数据
         this.globalData.userInfo = result.userInfo;
         this.globalData.quitDate = result.quitDate;

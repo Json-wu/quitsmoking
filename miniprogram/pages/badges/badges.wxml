@@ -1,0 +1,44 @@
+<!--pages/badges/badges.wxml-->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="header">
+    <text class="title">我的勋章</text>
+    <text class="subtitle">已解锁 {{ unlockedCount }}/{{ totalCount }} 个勋章</text>
+  </view>
+
+  <!-- 勋章列表 -->
+  <view class="badges-list">
+    <view 
+      class="badge-card {{ item.unlocked ? 'unlocked' : 'locked' }}" 
+      wx:for="{{ badges }}" 
+      wx:key="type"
+    >
+      <view class="badge-icon-wrapper">
+        <text class="badge-icon">{{ item.icon }}</text>
+        <view class="badge-status" wx:if="{{ item.unlocked }}">
+          <text class="status-text">已解锁</text>
+        </view>
+        <view class="badge-lock" wx:else>
+          <text class="lock-icon">🔒</text>
+        </view>
+      </view>
+      
+      <view class="badge-info">
+        <text class="badge-name">{{ item.name }}</text>
+        <text class="badge-desc">连续戒烟 {{ item.days }} 天解锁</text>
+        <view class="badge-progress" wx:if="{{ !item.unlocked }}">
+          <text class="progress-text">还需 {{ item.days - quitDays }} 天</text>
+        </view>
+        <view class="badge-unlock-date" wx:else>
+          <text class="unlock-text">解锁于 {{ item.unlockDate }}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{ badges.length === 0 }}">
+    <text class="empty-icon">🏅</text>
+    <text class="empty-text">暂无勋章数据</text>
+  </view>
+</view>

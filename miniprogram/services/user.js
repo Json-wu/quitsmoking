@@ -9,8 +9,8 @@ class UserService {
    */
   async getUserInfo() {
     try {
-      const result = await callFunction('getUserStats');
-      return result;
+      const res = await callFunction('getUserStats');
+      return res.result;
     } catch (err) {
       console.error('获取用户信息失败:', err);
       throw err;
@@ -24,8 +24,8 @@ class UserService {
    */
   async updateUserInfo(data) {
     try {
-      const result = await callFunction('updateUserInfo', data);
-      return result;
+      const res = await callFunction('updateUserInfo', data);
+      return res.result;
     } catch (err) {
       console.error('更新用户信息失败:', err);
       throw err;
@@ -39,8 +39,8 @@ class UserService {
    */
   async setQuitDate(quitDate) {
     try {
-      const result = await callFunction('setQuitDate', { quitDate });
-      return result;
+      const res = await callFunction('setQuitDate', { quitDate });
+      return res.result;
     } catch (err) {
       console.error('设置戒烟日期失败:', err);
       throw err;
@@ -53,8 +53,8 @@ class UserService {
    */
   async getUserStats() {
     try {
-      const result = await callFunction('getUserStats');
-      return result;
+      const res = await callFunction('getUserStats');
+      return res.result;
     } catch (err) {
       console.error('获取统计数据失败:', err);
       throw err;
@@ -68,8 +68,8 @@ class UserService {
    */
   async updateSettings(settings) {
     try {
-      const result = await callFunction('updateUserInfo', { settings });
-      return result;
+      const res = await callFunction('updateUserInfo', { settings });
+      return res.result;
     } catch (err) {
       console.error('更新设置失败:', err);
       throw err;
@@ -82,8 +82,8 @@ class UserService {
    */
   async getBadges() {
     try {
-      const result = await callFunction('getBadges');
-      return result;
+      const res = await callFunction('getBadges');
+      return res.result;
     } catch (err) {
       console.error('获取勋章列表失败:', err);
       throw err;

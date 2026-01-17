@@ -96,6 +96,10 @@
   border-radius: var(--radius-lg);
   border: none;
   box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 100rpx;
 }
 
 .save-btn::after {

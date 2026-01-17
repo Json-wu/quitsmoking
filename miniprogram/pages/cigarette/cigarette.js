@@ -233,7 +233,8 @@ Page({
     if (!this.data.isLit) {
       return;
     }
-
+    // 播放音效
+    this.playSound('puff');
     // 计算剩余可燃烧长度
     const cigaretteLength = 280;
     const filterLength = 40;
@@ -274,8 +275,7 @@ Page({
     // 重绘香烟
     this.drawCigarette();
 
-    // 播放音效
-    this.playSound('puff');
+   
 
     // 更新统计
     this.setData({
@@ -303,6 +303,11 @@ Page({
     if (this.data.burnProgress === 0) {
       return;
     }
+
+    // 震动反馈
+    wx.vibrateShort({
+      type: 'medium'
+    });
 
     // 抖掉烟灰，累加已燃烧长度，重置当前燃烧进度
     const cigaretteLength = 280;

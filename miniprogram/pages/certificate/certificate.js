@@ -50,7 +50,7 @@ Page({
       { level: 'advanced', name: '高级证书', icon: '🛡️', days: 90, unlocked: quitDays >= 90 },
       { level: 'expert', name: '专家证书', icon: '🏆', days: 180, unlocked: quitDays >= 180 },
       { level: 'master', name: '大师证书', icon: '👑', days: 365, unlocked: quitDays >= 365 },
-      { level: 'grandmaster', name: '宗师证书', icon: '⭐', days: 366, unlocked: quitDays > 365 }
+      { level: 'grandmaster', name: '宗师证书', icon: '⭐', days: 730, unlocked: quitDays >= 730 }
     ];
 
     this.setData({
@@ -246,10 +246,10 @@ Page({
     const contentText = `${quitStartDate} 开始戒烟，已戒${quitDays}天！`;
     ctx.fillText(contentText, 160, 120);
 
-    // 绘制鼓励语
+    // 绘制鼓励语（根据等级显示不同内容）
     ctx.font = 'bold 24px sans-serif';
     ctx.fillStyle = '#f4e622ff';
-    ctx.fillText('重点鼓励', width/2, 160);
+    ctx.fillText(config.encouragement || '重点鼓励', width/2, 160);
 
     // 绘制底部横线装饰
     // ctx.save();

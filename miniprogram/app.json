@@ -7,6 +7,7 @@
     "pages/methods/methods",
     "pages/article/article",
     "pages/profile/profile",
+    "pages/badges/badges",
     "pages/calendar/calendar",
     "pages/settings/settings"
   ],

@@ -26,7 +26,7 @@ class CertificateService {
    * @returns {String} 证书等级
    */
   getCertificateLevel(days) {
-    if (days > 365) return 'grandmaster';  // 宗师
+    if (days > 730) return 'grandmaster';  // 宗师
     if (days >= 365) return 'master';       // 大师
     if (days >= 180) return 'expert';       // 专家
     if (days >= 90) return 'advanced';      // 高级
@@ -47,42 +47,48 @@ class CertificateService {
         color: '#D2691E',
         icon: '🌱',
         bgGradient: ['#D2691E', '#A0522D'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-beginner.jpg'
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-beginner.jpg',
+        encouragement: '良好开端 继续坚持'
       },
       intermediate: {
         name: '中级证书',
         color: '#CD5C5C',
         icon: '🌳',
         bgGradient: ['#CD5C5C', '#B22222'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-intermediate.jpg'
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-intermediate.jpg',
+        encouragement: '成绩显著 再接再厉'
       },
       advanced: {
         name: '高级证书',
         color: '#8B4513',
         icon: '🛡️',
         bgGradient: ['#8B4513', '#654321'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-advanced.jpg'
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-advanced.jpg',
+        encouragement: '意志坚定 值得称赞'
       },
       expert: {
         name: '专家证书',
         color: '#DC143C',
         icon: '🏆',
         bgGradient: ['#DC143C', '#B22222'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-expert.jpg'
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-expert.jpg',
+        encouragement: '成就卓越 榜样力量'
       },
       master: {
         name: '大师证书',
         color: '#C41E3A',
         icon: '👑',
         bgGradient: ['#C41E3A', '#8B0000'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-master.jpg'
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-master.jpg',
+        encouragement: '毅力非凡 令人敬佩'
       },
       grandmaster: {
         name: '宗师证书',
         color: '#8B0000',
         icon: '⭐',
         bgGradient: ['#8B0000', '#660000'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-grandmaster.jpg'
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-grandmaster.jpg',
+        encouragement: '傲视群雄 宗师风范'
       }
     };
     return configs[level] || configs.beginner;

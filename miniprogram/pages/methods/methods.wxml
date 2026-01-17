@@ -1,7 +1,7 @@
 <!--pages/methods/methods.wxml-->
 <view class="container">
-  <!-- 分类标签 -->
-  <view class="category-tabs">
+  <!-- 分类标签（收藏模式下隐藏） -->
+  <view class="category-tabs" wx:if="{{ source !== 'collection' }}">
     <scroll-view class="tabs-scroll" scroll-x>
       <view class="tabs-wrapper">
         <view 

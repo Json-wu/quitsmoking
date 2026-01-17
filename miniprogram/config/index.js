@@ -7,8 +7,8 @@ module.exports = {
   // 小程序信息
   appInfo: {
     name: '我要戒烟',
-    version: '1.0.0',
-    description: '帮助用户戒烟的个人工具小程序'
+    version: '1.0.3',
+    description: '帮助您成功戒烟的个人工具小程序'
   },
 
   // 默认配置

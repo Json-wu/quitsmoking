@@ -37,7 +37,7 @@
       <!-- 送烟按钮：固定在底部，始终显示 -->
     <button class="share-btn" open-type="share">
       <text class="share-icon">🎁</text>
-      <text class="share-text">送烟给好友</text>
+      <text class="share-text">递烟给好友</text>
     </button>
   </view>
 

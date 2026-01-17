@@ -61,10 +61,11 @@ exports.main = async (event, context) => {
  * 获取证书等级
  */
 function getCertificateLevel(days) {
-  if (days >= 365) return 'master';
-  if (days >= 180) return 'expert';
-  if (days >= 90) return 'advanced';
-  if (days >= 30) return 'intermediate';
-  if (days >= 7) return 'beginner';
-  return 'none';
+  if (days >= 730) return 'grandmaster';  // 宗师 - 2年
+  if (days >= 365) return 'master';       // 大师 - 1年
+  if (days >= 180) return 'expert';       // 专家 - 半年
+  if (days >= 90) return 'advanced';      // 高级 - 季度
+  if (days >= 30) return 'intermediate';  // 中级 - 月度
+  if (days >= 7) return 'beginner';       // 初级 - 周度
+  return null;
 }

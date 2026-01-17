@@ -66,7 +66,7 @@ class CigaretteService {
     return {
       title: '给你送了一根电子烟，快来试试吧！',
       path: '/pages/cigarette/cigarette',
-      imageUrl: '/assets/images/share-cigarette.png'
+      imageUrl: '/assets/images/share-cigarette.jpeg'
     };
   }
 
@@ -76,9 +76,11 @@ class CigaretteService {
    */
   async recordShare() {
     try {
+      console.log('记录分享');
       const result = await callFunction('recordShare', {
         shareType: 'cigarette'
       });
+      console.log('记录分享结果:', result);
       return result;
     } catch (err) {
       console.error('记录分享失败:', err);

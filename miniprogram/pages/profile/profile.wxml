@@ -27,25 +27,18 @@
       </view>
       <view class="stat-card">
         <text class="stat-number">{{ shareCount }}</text>
-        <text class="stat-label">送烟次数</text>
+        <text class="stat-label">递烟次数</text>
       </view>
     </view>
   </view>
 
   <!-- 我的勋章 -->
-  <view class="badges-section card">
+  <view class="badges-section card" bindtap="goToBadges">
     <view class="section-header">
       <text class="section-title">我的勋章</text>
-      <text class="badge-count">{{ badgeCount }}/{{ totalBadges }}</text>
-    </view>
-    <view class="badges-grid">
-      <view 
-        class="badge-item {{ item.unlocked ? '' : 'locked' }}" 
-        wx:for="{{ badges }}" 
-        wx:key="type"
-      >
-        <text class="badge-emoji">{{ item.icon }}</text>
-        <text class="badge-name">{{ item.name }}</text>
+      <view class="header-right">
+        <text class="badge-count">{{ badgeCount }}/{{ totalBadges }}</text>
+        <text class="menu-arrow">></text>
       </view>
     </view>
   </view>
@@ -77,13 +70,6 @@
       <view class="menu-left">
         <text class="menu-icon">⚙️</text>
         <text class="menu-title">设置中心</text>
-      </view>
-      <text class="menu-arrow">></text>
-    </view>
-    <view class="menu-item" bindtap="goToAbout">
-      <view class="menu-left">
-        <text class="menu-icon">ℹ️</text>
-        <text class="menu-title">关于我们</text>
       </view>
       <text class="menu-arrow">></text>
     </view>

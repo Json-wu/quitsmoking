@@ -14,7 +14,7 @@ Page({
     showInRanking: true,
     publicData: true,
     cacheSize: '0KB',
-    version: '1.0.0',
+    version: '1.0.3',
     showDatePicker: false,
     tempQuitDate: '',
     today: ''
@@ -91,9 +91,9 @@ Page({
     try {
       wx.showLoading({ title: '设置中...' });
 
-      const res = await userService.setQuitDate(this.data.tempQuitDate);
+      const result = await userService.setQuitDate(this.data.tempQuitDate);
 
-      if (res?.result?.success) {
+      if (result?.success) {
         app.globalData.quitDate = this.data.tempQuitDate;
         this.setData({
           quitDate: this.data.tempQuitDate,
@@ -248,7 +248,7 @@ Page({
   handleAbout() {
     wx.showModal({
       title: '关于我们',
-      content: '我要戒烟小程序\n版本：1.0.0\n\n帮助您科学戒烟，重获健康生活！',
+      content: `我要戒烟小程序\n版本：${this.data.version}\n\n帮助您科学戒烟，重获健康生活！`,
       showCancel: false
     });
   },

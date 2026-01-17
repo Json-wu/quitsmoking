@@ -3,6 +3,7 @@ const articleService = require('../../services/article.js');
 
 Page({
   data: {
+    source: 'methods', // 数据源：methods（戒烟方法）或 collection（我的收藏）
     currentCategory: 'all',
     categories: [
       { id: 'all', name: '全部' },
@@ -19,6 +20,11 @@ Page({
   },
 
   onLoad(options) {
+    // 根据参数判断数据源
+    if (options.source === 'collection') {
+      this.setData({ source: 'collection' });
+      wx.setNavigationBarTitle({ title: '我的收藏' });
+    }
     this.loadArticles();
   },
 
@@ -63,32 +69,41 @@ Page({
     try {
       this.setData({ loading: true });
 
-      console.log('加载文章，分类:', this.data.currentCategory, '页码:', this.data.page);
-
-      const result = await articleService.getArticleList({
-        category: this.data.currentCategory,
-        page: this.data.page,
-        pageSize: this.data.pageSize
-      });
+      let result;
+      
+      // 根据数据源加载不同的数据
+      if (this.data.source === 'collection') {
+        // 加载收藏列表
+        console.log('加载收藏列表，页码:', this.data.page);
+        result = await articleService.getCollectionList();
+      } else {
+        // 加载戒烟方法文章
+        console.log('加载文章，分类:', this.data.currentCategory, '页码:', this.data.page);
+        result = await articleService.getArticleList({
+          category: this.data.currentCategory,
+          page: this.data.page,
+          pageSize: this.data.pageSize
+        });
+      }
 
       console.log('文章加载结果:', result);
 
       if (result.success) {
         const articles = result.articles.map(item => ({
           ...item,
-          categoryName: this.getCategoryName(item.category)
+          categoryName: item.categoryName || this.getCategoryName(item.category)
         }));
 
         console.log('处理后的文章列表:', articles);
 
         this.setData({
           articles: this.data.page === 1 ? articles : [...this.data.articles, ...articles],
-          noMore: articles.length < this.data.pageSize
+          noMore: this.data.source === 'collection' ? true : articles.length < this.data.pageSize
         });
 
         if (articles.length === 0 && this.data.page === 1) {
           wx.showToast({
-            title: '暂无文章数据',
+            title: this.data.source === 'collection' ? '暂无收藏的文章' : '暂无文章数据',
             icon: 'none'
           });
         }

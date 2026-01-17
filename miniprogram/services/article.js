@@ -105,11 +105,19 @@ class ArticleService {
    * @param {Number} pageSize - 每页数量
    * @returns {Promise} 收藏列表
    */
-  async getCollectionList(page = 1, pageSize = 10) {
+  async getCollectionList() {
     try {
-      const res = await callFunction('getCollectionList', {
-        page,
-        pageSize
+      const { result } = await callFunction('getCollections');
+      let articles = [];
+      console.log('获取收藏列表结果:', result);
+      if (result.success && result.collections.length > 0) {
+        articles = result.collections.map((item) => item.articleId);
+      }
+      const res = await callFunction('getArticles', {
+        category: 'all',
+        page: 1,
+        pageSize: 20,
+        aIds: articles
       });
       return res.result;
     } catch (err) {

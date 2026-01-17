@@ -79,12 +79,29 @@ exports.main = async (event, context) => {
       _openid: openid
     }).count();
 
-    // 获取电子烟统计
+    // 获取电子烟统计 - 统计所有记录的总和
     const { data: cigaretteStats } = await db.collection('cigarettes').where({
-      _openid: openid,
+      _openid: openid
     }).get();
 
-    const cigaretteCount = (cigaretteStats?.length || 0) > 0 ? cigaretteStats[0].puffCount : 0;
+    let cigaretteCount = 0;
+    if (cigaretteStats && cigaretteStats.length > 0) {
+      cigaretteCount = cigaretteStats.reduce((total, record) => {
+        return total + (record.puffCount || 0);
+      }, 0);
+    }
+
+    // 获取送烟次数统计 - 统计所有记录的总和
+    const { data: shareStats } = await db.collection('shares').where({
+      _openid: openid
+    }).get();
+
+    let shareCount = 0;
+    if (shareStats && shareStats.length > 0) {
+      shareCount = shareStats.reduce((total, record) => {
+        return total + (record.shareCount || 0);
+      }, 0);
+    }
 
     return {
       success: true,
@@ -105,7 +122,8 @@ exports.main = async (event, context) => {
       },
       badgeCount,
       makeUpCount: user.makeUpCount,
-      cigaretteCount
+      cigaretteCount,
+      shareCount
     };
   } catch (err) {
     console.error('获取用户统计失败:', err);

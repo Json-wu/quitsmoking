@@ -93,29 +93,6 @@
     </view>
   </view>
 
-  <!-- 戒烟方法推荐 -->
-  <view class="methods-section" wx:if="{{ recommendArticles.length > 0 }}">
-    <view class="section-title flex-between">
-      <text>戒烟方法推荐</text>
-      <text class="more-link" bindtap="goToMethods">更多 ></text>
-    </view>
-    <view class="article-list">
-      <view 
-        class="article-item card" 
-        wx:for="{{ recommendArticles }}" 
-        wx:key="id"
-        bindtap="goToArticle"
-        data-id="{{ item.id }}"
-      >
-        <view class="article-title text-ellipsis">{{ item.title }}</view>
-        <view class="article-meta">
-          <text class="article-tag">{{ item.category }}</text>
-          <text class="article-views">👁️ {{ item.viewCount }}</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- Banner广告 -->
   <view class="ad-section">
     <ad unit-id="adunit-xxxxxxxxxxxxxxxx" ad-type="banner" ad-theme="white"></ad>
