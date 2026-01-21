@@ -95,10 +95,6 @@ Page({
    */
   async refreshData() {
     await this.loadUserData();
-    wx.showToast({
-      title: '刷新成功',
-      icon: 'success'
-    });
   },
 
   /**

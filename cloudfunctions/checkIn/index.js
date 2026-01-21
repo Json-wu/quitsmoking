@@ -52,17 +52,20 @@ exports.main = async (event, context) => {
       totalDays = total + 1;
     }
 
-    // 添加签到记录
-    await db.collection('checkins').add({
-      data: {
-        _openid: openid,
+    const newData = {
+ _openid: openid,
         date: today,
         timestamp: Date.now(),
         isMakeUp: false,
         continuousDays,
         totalDays,
         createTime: new Date()
-      }
+    };
+    console.log('newData:', newData);
+
+    // 添加签到记录
+    await db.collection('checkins').add({
+      data: newData
     });
 
     // 检查是否解锁新勋章

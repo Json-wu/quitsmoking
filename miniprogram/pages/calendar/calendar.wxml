@@ -87,7 +87,7 @@
     </view>
     <view class="modal-body">
       <text class="modal-text">确定要补签 {{ selectedDate }} 吗？</text>
-      <text class="modal-tip">需要观看一段广告视频</text>
+      <!--<text class="modal-tip">需要观看一段广告视频</text>-->
     </view>
     <view class="modal-footer">
       <button class="modal-button cancel" bindtap="closeMakeUpModal">取消</button>

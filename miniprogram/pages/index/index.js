@@ -185,10 +185,6 @@ Page({
       // 重新加载页面数据
       await this.loadData();
       
-      wx.showToast({
-        title: '刷新成功',
-        icon: 'success'
-      });
     } catch (err) {
       console.error('刷新失败:', err);
     }

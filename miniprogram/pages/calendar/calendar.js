@@ -10,9 +10,9 @@ Page({
     weekDays: ['日', '一', '二', '三', '四', '五', '六'],
     calendarDays: [],
     checkinRecords: [],
-    continuousDays: 0,
+    continuousDays: app.globalData.currentStreak || 0,
     monthCheckin: 0,
-    totalCheckin: 0,
+    totalCheckin: app.globalData.totalCheckin || 0,
     makeUpCount: 3,
     showMakeUpModal: false,
     selectedDate: '',
@@ -43,23 +43,26 @@ Page({
   /**
    * 加载数据
    */
-  async loadData() {
+  async loadData(isFresh) {
     try {
       wx.showLoading({ title: '加载中...' });
 
+      if (!isFresh) {
+        this.setData({
+           continuousDays: app.globalData.currentStreak,
+          totalCheckin: app.globalData.totalCheckin
+        });
+      }
       // 获取签到记录
       const result = await checkinService.getCheckinRecords(
         this.data.currentYear,
         this.data.currentMonth
       );
 
-      console.log('签到记录:', result);
       if (result.success) {
         this.setData({
           checkinRecords: result.records || [],
-          continuousDays: app.globalData.currentStreak || 0,
-          totalCheckin: app.globalData.totalCheckin || 0,
-          makeUpCount: result.makeUpCount || 0
+          makeUpCount: result.makeUpCount || 0,
         });
 
         // 第2步：标记签到日期
@@ -242,6 +245,14 @@ Page({
       return;
     }
 
+    if (this.data.makeUpCount <= 0) {
+      wx.showToast({
+        title: '补签次数已用完',
+        icon: 'none'
+      });
+      return;
+    }
+
     // 显示补签确认弹窗
     this.setData({
       showMakeUpModal: true,
@@ -253,28 +264,26 @@ Page({
    * 确认补签
    */
   async confirmMakeUp() {
-    if (this.data.makeUpCount <= 0) {
-      wx.showToast({
-        title: '补签次数已用完',
-        icon: 'none'
-      });
-      this.closeMakeUpModal();
-      return;
-    }
-
     try {
       wx.showLoading({ title: '补签中...' });
 
       const result = await checkinService.makeUpCheckIn(this.data.selectedDate);
-
+console.log('confirmMakeUp:', result);
       if (result.success) {
         wx.showToast({
           title: '补签成功',
           icon: 'success'
         });
+        this.setData({
+          continuousDays: result.continuousDays,
+          totalCheckin: result.totalDays
+        });
+
+        app.globalData.currentStreak = result.continuousDays;
+        app.globalData.totalCheckin = result.totalDays;
 
         // 刷新数据
-        await this.loadData();
+        await this.loadData(true);
       } else {
         wx.showToast({
           title: result.message || '补签失败',

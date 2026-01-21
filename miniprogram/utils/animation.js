@@ -17,7 +17,7 @@ const createCheckinAnimation = () => {
 };
 
 /**
- * 创建烟雾粒子
+ * 创建烟雾粒子（竖向上升，炊烟袅袅效果）
  * @param {Number} count - 粒子数量
  * @returns {Array} 粒子数组
  */
@@ -25,29 +25,45 @@ const createSmokeParticles = (count = 30) => {
   const particles = [];
   for (let i = 0; i < count; i++) {
     particles.push({
-      x: Math.random() * 50 - 25,
+      x: Math.random() * 10 - 5, // 初始x偏移较小
       y: 0,
-      vx: (Math.random() - 0.5) * 2,
-      vy: -Math.random() * 3 - 1,
-      radius: Math.random() * 3 + 2,
-      opacity: 1,
-      life: Math.random() * 60 + 40
+      vx: (Math.random() - 0.5) * 0.5, // 减小横向速度
+      vy: -Math.random() * 2 - 1.5, // 向上速度（负值）
+      radius: Math.random() * 4 + 2,
+      opacity: 0.8,
+      life: Math.random() * 80 + 60, // 增加生命周期
+      angle: Math.random() * Math.PI * 2, // 摆动角度
+      swaySpeed: Math.random() * 0.05 + 0.02 // 摆动速度
     });
   }
   return particles;
 };
 
 /**
- * 更新粒子状态
+ * 更新粒子状态（添加炊烟袅袅效果）
  * @param {Array} particles - 粒子数组
  * @returns {Array} 更新后的粒子数组
  */
 const updateParticles = (particles) => {
   return particles.filter(p => {
-    p.x += p.vx;
+    // 更新摆动角度
+    p.angle += p.swaySpeed;
+    
+    // 添加左右摆动效果
+    const swayX = Math.sin(p.angle) * 1.5;
+    
+    // 更新位置
+    p.x += p.vx + swayX;
     p.y += p.vy;
-    p.opacity -= 0.015;
+    
+    // 粒子向上移动时逐渐扩散
+    p.vx *= 1.02;
+    p.radius *= 1.01; // 粒子逐渐变大
+    
+    // 透明度衰减
+    p.opacity -= 0.01;
     p.life--;
+    
     return p.life > 0 && p.opacity > 0;
   });
 };

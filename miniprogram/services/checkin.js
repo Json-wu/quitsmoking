@@ -25,13 +25,16 @@ class CheckinService {
   async makeUpCheckIn(date) {
     try {
       // 先播放激励视频广告
-      await this.showRewardedVideoAd();
+      // await this.showRewardedVideoAd();
       
-      const result = await callFunction('makeUpCheckIn', { date });
-      return result;
+      const res = await callFunction('makeUpCheckIn', { date });
+      return res.result;
     } catch (err) {
       console.error('补签失败:', err);
-      throw err;
+      return {
+        success: false,
+        message: '补签失败，请重试'
+      };
     }
   }
 
