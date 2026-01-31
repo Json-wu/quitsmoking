@@ -57,19 +57,24 @@ Page({
       console.log('电子烟次数:', statsResult.cigaretteCount);
       console.log('送烟次数:', statsResult.shareCount);
 
+      const totalCheckin = statsResult.totalCheckin || 0;
+
       // 计算勋章等级
       const badgeLevel = this.calculateBadgeLevel(statsResult.quitDays || globalData.quitDays || 0);
 
       // 初始化勋章数据
-      const badges = this.initBadges(badgesResult.badges || []);
+      const badges = this.initBadges(badgesResult.badges || [], totalCheckin);
+
+      // 勋章数量：按累计签到天数自动解锁口径计算（与勋章页保持一致）
+      const badgeCountByCheckin = badges.filter(b => b.unlocked).length;
 
       this.setData({
         userInfo: globalData.userInfo || {},
         badgeLevel,
-        totalCheckin: statsResult.totalCheckin || 0,
+        totalCheckin,
         cigaretteCount: statsResult.cigaretteCount || 0,
         shareCount: statsResult.shareCount || 0,
-        badgeCount: badgesResult.badges?.length || 0,
+        badgeCount: badgeCountByCheckin,
         badges
       }, () => {
         console.log('页面数据已更新:', {
@@ -114,7 +119,7 @@ Page({
   /**
    * 初始化勋章数据
    */
-  initBadges(unlockedBadges) {
+  initBadges(unlockedBadges, totalCheckin) {
     const allBadges = [
       { type: 'week_hero', name: '周度英雄', icon: '🏅', days: 7 },
       { type: 'month_warrior', name: '月度勇士', icon: '🥉', days: 30 },
@@ -128,7 +133,7 @@ Page({
 
     return allBadges.map(badge => ({
       ...badge,
-      unlocked: unlockedBadges.some(b => b.badgeType === badge.type)
+      unlocked: unlockedBadges.some(b => b.badgeType === badge.type) || (totalCheckin >= badge.days)
     }));
   },
 

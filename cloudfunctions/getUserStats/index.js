@@ -54,18 +54,19 @@ exports.main = async (event, context) => {
     }
 
     // 计算戒烟天数：基于戒烟开始日期
-    // 当天也算1天，所以需要 +1
     let quitDays = 0;
     if (user.quitDate) {
       const quitDate = new Date(user.quitDate);
-      const now = new Date();
-      // 将时间设置为0点，只比较日期
       quitDate.setHours(0, 0, 0, 0);
-      now.setHours(0, 0, 0, 0);
-      // 计算天数差，+1 表示包含当天
-      quitDays = Math.floor((now - quitDate) / (1000 * 60 * 60 * 24)) + 1;
-      // 确保天数不小于0
-      if (quitDays < 0) quitDays = 0;
+      const quitDateStr = quitDate.toISOString().slice(0, 10);
+
+      // 只统计有签到/补签记录的日期才算入戒烟天数
+      const { total: quitDaysFromCheckins } = await db.collection('checkins').where({
+        _openid: openid,
+        date: _.gte(quitDateStr)
+      }).count();
+
+      quitDays = quitDaysFromCheckins;
     }
 
     // 计算健康收益（基于戒烟天数）

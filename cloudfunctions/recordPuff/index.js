@@ -14,7 +14,7 @@ exports.main = async (event, context) => {
 
   try {
     // 验证类型
-    const validTypes = ['puff', 'shake', 'new'];
+    const validTypes = ['puff', 'shake', 'new', 'light'];
     if (!validTypes.includes(type)) {
       return {
         success: false,
@@ -44,6 +44,8 @@ exports.main = async (event, context) => {
         updateData.shakeCount = _.inc(count);
       } else if (type === 'new') {
         updateData.newCount = _.inc(count);
+      } else if (type === 'light') {
+        updateData.lightCount = _.inc(count);
       }
 
       await db.collection('cigarettes').doc(record._id).update({
@@ -59,7 +61,8 @@ exports.main = async (event, context) => {
         stats: {
           puffCount: updatedResult.data.puffCount || 0,
           shakeCount: updatedResult.data.shakeCount || 0,
-          newCount: updatedResult.data.newCount || 0
+          newCount: updatedResult.data.newCount || 0,
+          lightCount: updatedResult.data.lightCount || 0
         }
       };
     } else {
@@ -70,6 +73,7 @@ exports.main = async (event, context) => {
         puffCount: type === 'puff' ? count : 0,
         shakeCount: type === 'shake' ? count : 0,
         newCount: type === 'new' ? count : 0,
+        lightCount: type === 'light' ? count : 0,
         createTime: db.serverDate()
       };
 
@@ -83,7 +87,8 @@ exports.main = async (event, context) => {
         stats: {
           puffCount: newRecord.puffCount,
           shakeCount: newRecord.shakeCount,
-          newCount: newRecord.newCount
+          newCount: newRecord.newCount,
+          lightCount: newRecord.lightCount
         }
       };
     }

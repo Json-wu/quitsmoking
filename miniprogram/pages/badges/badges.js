@@ -5,7 +5,7 @@ const userService = require('../../services/user.js');
 Page({
   data: {
     badges: [],
-    quitDays: 0,
+    totalCheckin: 0,
     unlockedCount: 0,
     totalCount: 8
   },
@@ -25,11 +25,17 @@ Page({
     try {
       wx.showLoading({ title: '加载中...' });
 
-      // 获取全局数据
-      const globalData = app.globalData;
-      const quitDays = globalData.quitDays || 0;
+      // 获取累计签到天数（以云端统计为准，避免全局数据未刷新）
+      let totalCheckin = app.globalData.totalCheckin || 0;
+      try {
+        const statsResult = await userService.getUserStats();
+        totalCheckin = statsResult.totalCheckin || 0;
+        app.globalData.totalCheckin = totalCheckin;
+      } catch (statsErr) {
+        console.error('获取用户统计失败，将使用缓存值:', statsErr);
+      }
 
-      console.log('当前戒烟天数:', quitDays);
+      console.log('当前累计签到天数:', totalCheckin);
 
       let unlockedBadges = [];
       
@@ -43,7 +49,7 @@ Page({
       }
 
       // 初始化所有勋章配置（即使没有获取到已解锁勋章，也要显示所有勋章）
-      const allBadges = this.initAllBadges(unlockedBadges, quitDays);
+      const allBadges = this.initAllBadges(unlockedBadges, totalCheckin);
 
       console.log('所有勋章数据:', allBadges);
       console.log('勋章总数:', allBadges.length);
@@ -53,7 +59,7 @@ Page({
 
       this.setData({
         badges: allBadges,
-        quitDays,
+        totalCheckin,
         unlockedCount,
         totalCount: allBadges.length
       }, () => {
@@ -67,7 +73,7 @@ Page({
       const allBadges = this.initAllBadges([], 0);
       this.setData({
         badges: allBadges,
-        quitDays: 0,
+        totalCheckin: 0,
         unlockedCount: 0,
         totalCount: allBadges.length
       });
@@ -84,7 +90,7 @@ Page({
   /**
    * 初始化所有勋章
    */
-  initAllBadges(unlockedBadges, quitDays) {
+  initAllBadges(unlockedBadges, totalCheckin) {
     const allBadges = [
       { type: 'week_hero', name: '周度英雄', icon: '🏅', days: 7 },
       { type: 'month_warrior', name: '月度勇士', icon: '🥉', days: 30 },
@@ -98,9 +104,10 @@ Page({
 
     return allBadges.map(badge => {
       const unlockedBadge = unlockedBadges.find(b => b.badgeType === badge.type);
+      const isUnlockedByCheckin = totalCheckin >= badge.days;
       return {
         ...badge,
-        unlocked: !!unlockedBadge,
+        unlocked: !!unlockedBadge || isUnlockedByCheckin,
         unlockDate: unlockedBadge ? this.formatDate(unlockedBadge.unlockTime) : null
       };
     });

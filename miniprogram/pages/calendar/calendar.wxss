@@ -159,14 +159,13 @@
   position: absolute;
   bottom: 4rpx;
   right: 4rpx;
-  background-color: var(--warning-color);
-  padding: 2rpx 6rpx;
-  border-radius: 4rpx;
 }
 
 .makeup-icon {
-  font-size: 18rpx;
-  color: #FFFFFF;
+  font-size: 22rpx;
+  color: #FFD54F;
+  font-weight: bold;
+  line-height: 1;
 }
 
 /* 戒烟日期标记 - 圆形标识 */

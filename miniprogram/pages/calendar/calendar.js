@@ -149,10 +149,11 @@ Page({
       // 判断是否在戒烟日期范围内：戒烟开始日期 <= 当前日期 <= 今天
       const isAfterQuitDate = currentDateObj >= quitDateObj;
       const isBeforeToday = currentDateObj <= today;
+      const isChecked = !!day.isChecked;
       
       return {
         ...day,
-        isQuitDay: isAfterQuitDate && isBeforeToday
+        isQuitDay: isAfterQuitDate && isBeforeToday && isChecked
       };
     });
 

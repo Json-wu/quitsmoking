@@ -25,11 +25,11 @@
       
       <view class="badge-info">
         <text class="badge-name">{{ item.name }}</text>
-        <text class="badge-desc">连续戒烟 {{ item.days }} 天解锁</text>
+        <text class="badge-desc">累计签到 {{ item.days }} 天解锁</text>
         <view class="badge-progress" wx:if="{{ !item.unlocked }}">
-          <text class="progress-text">还需 {{ item.days - quitDays }} 天</text>
+          <text class="progress-text">还需 {{ item.days - totalCheckin }} 天</text>
         </view>
-        <view class="badge-unlock-date" wx:else>
+        <view class="badge-unlock-date" wx:if="{{ item.unlocked && item.unlockDate }}">
           <text class="unlock-text">解锁于 {{ item.unlockDate }}</text>
         </view>
       </view>

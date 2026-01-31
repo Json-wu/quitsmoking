@@ -33,12 +33,14 @@ exports.main = async (event, context) => {
     let todayPuffCount = 0;
     let todayShakeCount = 0;
     let todayNewCount = 0;
+    let todayLightCount = 0;
 
     if (todayRecords && todayRecords.length > 0) {
       const record = todayRecords[0];
       todayPuffCount = record.puffCount || 0;
       todayShakeCount = record.shakeCount || 0;
       todayNewCount = record.newCount || 0;
+      todayLightCount = record.lightCount || record.newCount || 0;
     }
 
     // 获取所有记录统计总数
@@ -51,12 +53,14 @@ exports.main = async (event, context) => {
     let totalPuffCount = 0;
     let totalShakeCount = 0;
     let totalNewCount = 0;
+    let totalLightCount = 0;
 
     if (allRecords && allRecords.length > 0) {
       allRecords.forEach(record => {
         totalPuffCount += record.puffCount || 0;
         totalShakeCount += record.shakeCount || 0;
         totalNewCount += record.newCount || 0;
+        totalLightCount += record.lightCount || record.newCount || 0;
       });
     }
 
@@ -65,12 +69,14 @@ exports.main = async (event, context) => {
       today: {
         puffCount: todayPuffCount,
         shakeCount: todayShakeCount,
-        newCount: todayNewCount
+        newCount: todayNewCount,
+        lightCount: todayLightCount
       },
       total: {
         puffCount: totalPuffCount,
         shakeCount: totalShakeCount,
-        newCount: totalNewCount
+        newCount: totalNewCount,
+        lightCount: totalLightCount
       }
     };
   } catch (err) {
@@ -81,12 +87,14 @@ exports.main = async (event, context) => {
       today: {
         puffCount: 0,
         shakeCount: 0,
-        newCount: 0
+        newCount: 0,
+        lightCount: 0
       },
       total: {
         puffCount: 0,
         shakeCount: 0,
-        newCount: 0
+        newCount: 0,
+        lightCount: 0
       }
     };
   }

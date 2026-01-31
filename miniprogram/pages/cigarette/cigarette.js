@@ -12,8 +12,7 @@ Page({
     currentPuffs: 0,        // 当前段已吸几口（抖灰后重置）
     puffCount: 0,           // 吸烟次数
     shakeCount: 0,          // 抖灰次数
-    newCount: 0,            // 再来一根次数
-    lastPuffTime: 0         // 上次吸烟时间戳
+    lightCount: 0          // 今日点火次数（抽了几根）
   },
 
   onLoad(options) {
@@ -29,6 +28,15 @@ Page({
     // 停止动画
     if (this.data.animationId) {
       cancelAnimationFrame(this.data.animationId);
+    }
+
+    if (this.audioContexts) {
+      Object.keys(this.audioContexts).forEach((key) => {
+        try {
+          this.audioContexts[key].destroy();
+        } catch (e) {
+        }
+      });
     }
   },
 
@@ -91,10 +99,11 @@ Page({
     try {
       const result = await cigaretteService.getTodayStats();
       if (result.success) {
+        const todayStats = result.today || {};
         this.setData({
-          puffCount: result.puffCount || 0,
-          shakeCount: result.shakeCount || 0,
-          newCount: result.newCount || 0
+          puffCount: todayStats.puffCount || 0,
+          shakeCount: todayStats.shakeCount || 0,
+          lightCount: todayStats.lightCount || 0
         });
       }
     } catch (err) {
@@ -280,9 +289,14 @@ Page({
     // 播放音效
     this.playSound('light');
 
+    // 更新统计
+    this.setData({
+      lightCount: this.data.lightCount + 1
+    });
+
     // 记录到服务器
     console.log('记录到服务器', '点火');
-    cigaretteService.recordNewCigarette();
+    cigaretteService.recordLight();
   },
 
   /**
@@ -290,12 +304,6 @@ Page({
    */
   async handlePuff() {
     if (!this.data.isLit) {
-      return;
-    }
-    
-    // 防抖：1秒内只能吸一次
-    const now = Date.now();
-    if (now - this.data.lastPuffTime < 1000) {
       return;
     }
     
@@ -329,8 +337,7 @@ Page({
     this.setData({
       totalPuffs: newTotalPuffs,
       currentPuffs: newCurrentPuffs,
-      burnProgress: newProgress,
-      lastPuffTime: now  // 更新上次吸烟时间
+      burnProgress: newProgress
     });
 
     // 重绘香烟
@@ -370,17 +377,21 @@ Page({
       type: 'medium'
     });
 
-    // 抖掉烟灰：将当前段已燃烧部分累加到totalBurnedLength，重置burnProgress
-    // 这样烟灰掉落，未燃烧部分保持不变
+    // 抖灰：掉落“已燃烧的部分”，但不回弹。
+    // 依据总口数计算总燃烧长度，并保留最小烟灰像素，避免左侧完全空白。
     const cigaretteLength = 350;
     const filterLength = 60;
     const burnableLength = cigaretteLength - filterLength;
-    const remainingBurnableLength = burnableLength - this.data.totalBurnedLength;
-    const currentBurnedLength = (this.data.burnProgress / 100) * remainingBurnableLength;
+
+    const minAshPixels = 3;
+    const progressPerPuff = 98 / this.data.maxPuffs;
+    const totalProgress = Math.min(100, 2 + (this.data.totalPuffs * progressPerPuff));
+    const totalBurnedFromProgress = (totalProgress / 100) * burnableLength;
+    const newTotalBurnedLength = Math.max(0, totalBurnedFromProgress - minAshPixels);
 
     this.setData({
-      totalBurnedLength: this.data.totalBurnedLength + currentBurnedLength,  // 累加已燃烧长度
-      burnProgress: 2,      // 重置为2%保持火源显示
+      totalBurnedLength: newTotalBurnedLength,
+      burnProgress: 2,      // 抖灰后保留最小烟灰+火焰
       currentPuffs: 0       // 重置当前段吸烟次数
       // totalPuffs 不重置，继续累计
       // isLit 保持为 true，继续保持点火状态
@@ -422,18 +433,7 @@ Page({
     // 重绘全新的香烟
     this.drawCigarette();
 
-    // 更新统计
-    this.setData({
-      newCount: this.data.newCount + 1
-    });
-
-    // 记录到服务器
-    try {
-      console.log('记录到服务器', '再来一根');
-      await cigaretteService.recordNewCigarette();
-    } catch (err) {
-      console.error('记录失败:', err);
-    }
+    // 再来一根仅用于重置，不计入“抽了几根”（点火次数）统计
   },
 
 
@@ -441,8 +441,38 @@ Page({
    * 播放音效
    */
   playSound(type) {
-    const audioContext = wx.createInnerAudioContext();
-    audioContext.src = `/assets/audios/${type}.mp3`;
+    if (!this.audioContexts) {
+      this.audioContexts = {};
+    }
+    if (!this.audioPlaying) {
+      this.audioPlaying = {};
+    }
+
+    if (this.audioPlaying[type]) {
+      return;
+    }
+
+    let audioContext = this.audioContexts[type];
+    if (!audioContext) {
+      audioContext = wx.createInnerAudioContext();
+      audioContext.src = `/assets/audios/${type}.mp3`;
+      audioContext.onEnded(() => {
+        this.audioPlaying[type] = false;
+      });
+      audioContext.onStop(() => {
+        this.audioPlaying[type] = false;
+      });
+      audioContext.onError(() => {
+        this.audioPlaying[type] = false;
+      });
+      this.audioContexts[type] = audioContext;
+    }
+
+    this.audioPlaying[type] = true;
+    try {
+      audioContext.seek(0);
+    } catch (e) {
+    }
     audioContext.play();
   }
 });

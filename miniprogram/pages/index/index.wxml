@@ -9,7 +9,7 @@
       <text class="quit-days-unit">天</text>
     </view>
     <view class="quit-subtitle" wx:if="{{ quitDays > 0 }}">
-      距离目标还有 {{ targetDays }} 天
+      <!-- 距离目标还有 {{ targetDays }} 天 -->
     </view>
     <view class="quit-subtitle" wx:else>
       <text class="text-tertiary">点击下方设置开始戒烟日期</text>

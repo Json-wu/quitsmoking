@@ -5,14 +5,14 @@ const { callFunction } = require('../utils/request.js');
 class CigaretteService {
   /**
    * 记录吸烟行为
-   * @param {String} type - 行为类型: puff/shake/new
+   * @param {String} type - 行为类型: puff/shake/new/light
    * @param {Number} count - 次数
    * @returns {Promise} 记录结果
    */
   async recordPuff(type, count = 1) {
     try {
       const result = await callFunction('recordPuff', { type, count });
-      return result;
+      return result.result;
     } catch (err) {
       console.error('记录吸烟行为失败:', err);
       throw err;
@@ -44,13 +44,21 @@ class CigaretteService {
   }
 
   /**
+   * 记录点火（抽了几根）
+   * @returns {Promise} 记录结果
+   */
+  async recordLight() {
+    return this.recordPuff('light', 1);
+  }
+
+  /**
    * 获取今日统计
    * @returns {Promise} 统计数据
    */
   async getTodayStats() {
     try {
       const result = await callFunction('getCigaretteStats');
-      return result;
+      return result.result;
     } catch (err) {
       console.error('获取统计数据失败:', err);
       throw err;

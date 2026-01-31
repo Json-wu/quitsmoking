@@ -32,11 +32,9 @@
   <!-- 操作按钮 -->
   <view class="action-buttons">
     <button class="action-btn save-btn" bindtap="handleSave" disabled="{{ !hasGenerated }}">
-      <text class="btn-icon">💾</text>
       <text class="btn-text">保存到相册</text>
     </button>
     <button class="action-btn share-btn" open-type="share" disabled="{{ !hasGenerated }}">
-      <text class="btn-icon">📤</text>
       <text class="btn-text">分享证书</text>
     </button>
   </view>

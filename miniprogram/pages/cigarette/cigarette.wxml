@@ -36,7 +36,6 @@
     </button>
       <!-- 送烟按钮：固定在底部，始终显示 -->
     <button class="share-btn" open-type="share">
-      <text class="share-icon">🎁</text>
       <text class="share-text">递烟给好友</text>
     </button>
   </view>
@@ -59,8 +58,8 @@
         <text class="stat-label">抖了几次</text>
       </view>
       <view class="stat-item">
-        <text class="stat-value">{{ newCount }}</text>
-        <text class="stat-label">再来几根</text>
+        <text class="stat-value">{{ lightCount }}</text>
+        <text class="stat-label">抽了几根</text>
       </view>
     </view>
   </view>

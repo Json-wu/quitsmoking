@@ -55,7 +55,7 @@ class CertificateService {
         color: '#CD5C5C',
         icon: '🌳',
         bgGradient: ['#CD5C5C', '#B22222'],
-        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/border-intermediate.jpg',
+        borderImage: 'cloud://cloud1-5g9hlytr7a58a6f7.636c-cloud1-5g9hlytr7a58a6f7-1395770922/intermediate.jpg',
         encouragement: '成绩显著 再接再厉'
       },
       advanced: {

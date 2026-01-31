@@ -51,11 +51,11 @@
         data-checked="{{ item.isChecked }}"
       >
         <text class="day-number">{{ item.date }}</text>
-        <view class="day-status" wx:if="{{ item.isChecked }}">
+        <view class="day-status" wx:if="{{ item.isChecked && !item.isMakeUp }}">
           <text class="status-icon">✓</text>
         </view>
         <view class="day-makeup" wx:if="{{ item.isMakeUp }}">
-          <text class="makeup-icon">补</text>
+          <text class="makeup-icon">+</text>
         </view>
         <!-- 戒烟日期标记 -->
         <view class="day-quit" wx:if="{{ item.isQuitDay && item.isCurrentMonth }}">
@@ -73,7 +73,7 @@
     </view>
     <view class="makeup-tips">
       <text class="tip-item">• 每月可补签3次</text>
-      <text class="tip-item">• 补签需观看激励视频广告</text>
+      <!-- <text class="tip-item">• 补签需观看激励视频广告</text> -->
       <text class="tip-item">• 只能补签本月漏签的日期</text>
     </view>
   </view>

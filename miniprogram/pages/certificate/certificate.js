@@ -227,14 +227,14 @@ Page({
     ctx.fillStyle = 'red';
     ctx.textAlign = 'center';
     ctx.letterSpacing = '10px';
-    ctx.fillText('荣誉证书', width / 2, 40);
+    ctx.fillText('荣誉证书', width / 2, 50);
     ctx.letterSpacing = '0px';
 
     // 绘制称呼
     ctx.font = 'bold 18px sans-serif';
-    ctx.fillStyle = '#f4e622ff';
+    ctx.fillStyle = '#000000';
     ctx.textAlign = 'left';
-    ctx.fillText('尊敬的戒烟达人：', 20, 80);
+    ctx.fillText('尊敬的戒烟达人：', 40, 90);
 
     // 获取戒烟开始日期
     const quitStartDate = app.globalData.quitDate || '2026-01-16';
@@ -244,7 +244,7 @@ Page({
     ctx.fillStyle = '#f4e622ff';
     ctx.textAlign = 'center';
     const contentText = `${quitStartDate} 开始戒烟，已戒${quitDays}天！`;
-    ctx.fillText(contentText, 160, 120);
+    ctx.fillText(contentText, 180, 120);
 
     // 绘制鼓励语（根据等级显示不同内容）
     ctx.font = 'bold 24px sans-serif';

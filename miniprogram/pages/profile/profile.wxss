@@ -94,6 +94,10 @@
   margin: 0 var(--spacing-md) var(--spacing-md);
 }
 
+.badges-section .section-header {
+  margin-bottom: 0;
+}
+
 .section-header {
   display: flex;
   align-items: center;
@@ -119,8 +123,9 @@
 }
 
 .badges-section .menu-arrow {
-  font-size: var(--font-md);
-  color: var(--text-tertiary);
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.6;
 }
 
 .badges-grid {
@@ -196,8 +201,9 @@
 }
 
 .menu-arrow {
-  font-size: var(--font-md);
-  color: var(--text-tertiary);
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.6;
 }
 
 /* 广告区域 */
