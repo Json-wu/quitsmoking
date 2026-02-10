@@ -1,5 +1,7 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "电子烟",
+  "navigationBarTitleText": "我要戒烟",
+  "navigationBarBackgroundColor": "#C8DEFF",
+  "navigationBarTextStyle": "black",
   "disableScroll": true
 }

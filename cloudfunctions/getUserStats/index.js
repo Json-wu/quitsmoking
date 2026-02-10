@@ -31,6 +31,30 @@ exports.main = async (event, context) => {
 
     const user = users[0];
 
+    // 每月自动重置补签次数为 3 次（以当月为周期）
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    let makeUpCount = (typeof user.makeUpCount === 'number') ? user.makeUpCount : undefined;
+    if (user.lastMakeUpResetMonth !== currentMonthKey) {
+      await db.collection('users').doc(user._id).update({
+        data: {
+          makeUpCount: 3,
+          lastMakeUpResetMonth: currentMonthKey,
+          updateTime: db.serverDate()
+        }
+      });
+      makeUpCount = 3;
+    } else if (typeof makeUpCount !== 'number') {
+      // 兼容老用户：已是本月但没有初始化 makeUpCount
+      await db.collection('users').doc(user._id).update({
+        data: {
+          makeUpCount: 3,
+          updateTime: db.serverDate()
+        }
+      });
+      makeUpCount = 3;
+    }
+
     // 获取今日签到状态
     const today = new Date().toISOString().slice(0, 10);
     const { data: todayCheckin } = await db.collection('checkins').where({
@@ -122,7 +146,7 @@ exports.main = async (event, context) => {
         nicotineReduced
       },
       badgeCount,
-      makeUpCount: user.makeUpCount,
+      makeUpCount,
       cigaretteCount,
       shareCount
     };

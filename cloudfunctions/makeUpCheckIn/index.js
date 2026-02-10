@@ -56,6 +56,30 @@ exports.main = async (event, context) => {
 
     const user = userResult.data[0];
 
+    // 每月自动重置补签次数为 3 次
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    if (user.lastMakeUpResetMonth !== currentMonthKey) {
+      await db.collection('users').doc(user._id).update({
+        data: {
+          makeUpCount: 3,
+          lastMakeUpResetMonth: currentMonthKey,
+          updateTime: db.serverDate()
+        }
+      });
+      user.makeUpCount = 3;
+      user.lastMakeUpResetMonth = currentMonthKey;
+    } else if (typeof user.makeUpCount !== 'number') {
+      // 兼容老用户：已是本月但没有初始化 makeUpCount
+      await db.collection('users').doc(user._id).update({
+        data: {
+          makeUpCount: 3,
+          updateTime: db.serverDate()
+        }
+      });
+      user.makeUpCount = 3;
+    }
+
     // 检查补签次数
     const makeUpCount = user.makeUpCount || 0;
     if (makeUpCount === 0) {

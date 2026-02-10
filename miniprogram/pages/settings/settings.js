@@ -14,7 +14,7 @@ Page({
     showInRanking: true,
     publicData: true,
     cacheSize: '0KB',
-    version: '1.0.3',
+    version: '1.0.4',
     showDatePicker: false,
     tempQuitDate: '',
     today: ''

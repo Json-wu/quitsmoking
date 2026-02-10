@@ -1,0 +1,107 @@
+/* pages/breathing/breathing.wxss */
+
+.container {
+  min-height: 100vh;
+  background: #ffffffd8;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx;
+}
+
+/* 顶部提示文字 */
+.step-text {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 60rpx;
+  min-height: 80rpx;
+  display: flex;
+  align-items: center;
+}
+
+/* 肺部容器 */
+.lung-container {
+  width: 500rpx;
+  height: 500rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 100rpx;
+}
+
+/* 肺部图片 */
+.lung-image {
+  width: 400rpx;
+  height: 400rpx;
+  transition: transform 0.3s ease;
+}
+
+/* 呼吸动画 */
+.lung-image.breathing {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* 倒计时文字 */
+.countdown-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+/* 下一步按钮 */
+.next-btn {
+  width: 500rpx;
+  height: 96rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.next-btn::after {
+  border: none;
+}
+
+.next-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮禁用状态 */
+.next-btn.disabled {
+  background: linear-gradient(135deg, #b8c5f2 0%, #c4b5d8 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.15);
+  opacity: 0.7;
+}
+
+.next-btn.disabled:active {
+  transform: none;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.15);
+}

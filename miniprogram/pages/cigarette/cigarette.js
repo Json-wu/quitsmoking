@@ -138,32 +138,7 @@ Page({
     const actualStartX = (width - cigaretteLength) / 2 + this.data.totalBurnedLength;
     const startY = height / 2 - cigaretteWidth / 2;
 
-    // 绘制未燃烧的烟身（白色）
-    if (currentBurnedLength < remainingBurnableLength) {
-      ctx.fillStyle = '#FFFFFF';
-      // 如果已点火，从火源位置开始绘制白色烟身
-      if (this.data.isLit) {
-        // 火源宽度6px，烟灰根据burnProgress计算但最少显示一点
-        const ashLength = Math.max(currentBurnedLength, 3); // 至少3px烟灰
-        const fireWidth = 6;
-        ctx.fillRect(
-          actualStartX + ashLength + fireWidth,
-          startY,
-          remainingBurnableLength - ashLength - fireWidth,
-          cigaretteWidth
-        );
-      } else {
-        // 未点火时，整根香烟都是白色
-        ctx.fillRect(
-          actualStartX,
-          startY,
-          remainingBurnableLength,
-          cigaretteWidth
-        );
-      }
-    }
-
-    // 绘制过滤嘴（橙黄色）
+    // 先绘制过滤嘴（橙黄色）
     const filterStartX = (width - cigaretteLength) / 2 + burnableLength;
     ctx.fillStyle = '#FFB84D';
     ctx.fillRect(
@@ -199,7 +174,7 @@ Page({
         cigaretteWidth
       );
       
-      // 添加颗粒感纹理
+      // 添加烟灰颗粒纹理 - 参考首页方法
       for (let i = 0; i < ashLength; i += 2) {
         for (let j = 0; j < cigaretteWidth; j += 2) {
           if (Math.random() > 0.5) {
@@ -210,35 +185,35 @@ Page({
         }
       }
       
-      // 绘制不规则边框效果
-      ctx.strokeStyle = '#808080'; // 深灰色边框
+      // 右侧边缘不规则毛躁效果（燃烧端）
+      ctx.strokeStyle = '#808080';
       ctx.lineWidth = 1;
       
-      // 顶部不规则边缘
+      // 顶部边缘
       ctx.beginPath();
       ctx.moveTo(actualStartX, startY);
-      for (let i = 0; i < ashLength; i += 3) {
-        const offset = Math.random() * 2 - 1; // -1到1的随机偏移
+      for (let i = 0; i < ashLength; i += 2) {
+        const offset = Math.random() * 1.5 - 0.75;
         ctx.lineTo(actualStartX + i, startY + offset);
       }
       ctx.lineTo(actualStartX + ashLength, startY);
       ctx.stroke();
       
-      // 底部不规则边缘
+      // 底部边缘
       ctx.beginPath();
       ctx.moveTo(actualStartX, startY + cigaretteWidth);
-      for (let i = 0; i < ashLength; i += 3) {
-        const offset = Math.random() * 2 - 1; // -1到1的随机偏移
+      for (let i = 0; i < ashLength; i += 2) {
+        const offset = Math.random() * 1.5 - 0.75;
         ctx.lineTo(actualStartX + i, startY + cigaretteWidth + offset);
       }
       ctx.lineTo(actualStartX + ashLength, startY + cigaretteWidth);
       ctx.stroke();
       
-      // 右侧边缘（燃烧端）不规则效果
+      // 右侧燃烧端边缘 - 更明显的毛躁感
       ctx.beginPath();
       ctx.moveTo(actualStartX + ashLength, startY);
-      for (let j = 0; j < cigaretteWidth; j += 2) {
-        const offset = Math.random() * 3 - 1.5; // -1.5到1.5的随机偏移
+      for (let j = 0; j <= cigaretteWidth; j += 1.5) {
+        const offset = Math.random() * 2.5 - 1.25;
         ctx.lineTo(actualStartX + ashLength + offset, startY + j);
       }
       ctx.lineTo(actualStartX + ashLength, startY + cigaretteWidth);
@@ -252,7 +227,7 @@ Page({
       const burnX = actualStartX + ashLength;
       
       // 绘制深红色竖条纹（6px宽）
-      ctx.fillStyle = '#8B0000'; // 深红色
+      ctx.fillStyle = '#CC0000'; // 更亮的红色
       ctx.fillRect(
         burnX,
         startY,
@@ -261,7 +236,7 @@ Page({
       );
       
       // 添加亮红色中心线（4px宽）
-      ctx.fillStyle = '#FF0000'; // 鲜红色
+      ctx.fillStyle = '#FF3333'; // 更亮的鲜红色
       ctx.fillRect(
         burnX + 1,
         startY,
@@ -269,6 +244,58 @@ Page({
         cigaretteWidth
       );
     }
+
+    // 绘制未燃烧的烟身（白色）- 在烟灰和火源之后绘制
+    ctx.fillStyle = '#FFFFFF';
+    let whiteBodyStartX, whiteBodyLength;
+    
+    if (this.data.isLit) {
+      // 如果已点火，从火源位置开始绘制白色烟身
+      const ashLength = Math.max(currentBurnedLength, 3);
+      const fireWidth = 6;
+      whiteBodyStartX = actualStartX + ashLength + fireWidth;
+      whiteBodyLength = remainingBurnableLength - ashLength - fireWidth;
+      
+      if (whiteBodyLength > 0) {
+        ctx.fillRect(
+          whiteBodyStartX,
+          startY,
+          whiteBodyLength,
+          cigaretteWidth
+        );
+      }
+    } else {
+      // 未点火时，整根香烟都是白色
+      whiteBodyStartX = actualStartX;
+      whiteBodyLength = remainingBurnableLength;
+      ctx.fillRect(
+        whiteBodyStartX,
+        startY,
+        whiteBodyLength,
+        cigaretteWidth
+      );
+    }
+    
+    // 绘制烟身纹理（竖条纹）
+    if (whiteBodyLength > 0) {
+      ctx.strokeStyle = '#E0E0E0';
+      ctx.lineWidth = 0.5;
+      const stripeSpacing = 4;
+      const stripeCount = Math.floor(whiteBodyLength / stripeSpacing);
+      
+      for (let i = 0; i <= stripeCount; i++) {
+        const x = whiteBodyStartX + (i * stripeSpacing);
+        if (x <= whiteBodyStartX + whiteBodyLength) {
+          ctx.beginPath();
+          ctx.moveTo(x, startY);
+          ctx.lineTo(x, startY + cigaretteWidth);
+          ctx.stroke();
+        }
+      }
+    }
+    
+    // 调试日志
+    console.log('香烟绘制完成 - isLit:', this.data.isLit, 'burnProgress:', this.data.burnProgress, 'currentBurnedLength:', currentBurnedLength);
   },
 
   /**
@@ -279,12 +306,27 @@ Page({
       return;
     }
 
-    // 点火后立即显示火源，设置2%的燃烧进度
+    // 点火后立即显示火源，设置5%的燃烧进度确保烟灰可见
     this.setData({ 
       isLit: true,
-      burnProgress: 2  // 设置2%的燃烧进度，测试效果
+      burnProgress: 5  // 设置5%的燃烧进度，确保烟灰足够长
+    }, () => {
+      // 在setData回调中绘制，确保状态已更新
+      this.drawCigarette();
+      
+      // 真机兼容：多次延迟重绘确保显示
+      setTimeout(() => {
+        this.drawCigarette();
+      }, 50);
+      
+      setTimeout(() => {
+        this.drawCigarette();
+      }, 100);
+      
+      setTimeout(() => {
+        this.drawCigarette();
+      }, 200);
     });
-    this.drawCigarette();
 
     // 播放音效
     this.playSound('light');

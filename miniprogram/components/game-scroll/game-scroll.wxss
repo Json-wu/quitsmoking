@@ -1,0 +1,60 @@
+.game-scroll {
+  width: 100%;
+}
+
+.games-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.games-grid-wrapper {
+  width: 100%;
+  overflow: hidden;
+  padding-bottom: 20rpx;
+}
+
+.games-grid {
+  display: flex;
+  gap: 20rpx;
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.game-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx 16rpx;
+  background: #F8F9FA;
+  border-radius: 16rpx;
+  transition: transform 0.3s ease, background 0.3s ease;
+  flex-shrink: 0;
+  min-width: 120rpx;
+}
+
+.game-item:active {
+  transform: scale(0.95);
+  background: #E9ECEF;
+}
+
+.game-icon {
+  width: 100rpx;
+  height: 100rpx;
+  font-size: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-name {
+  font-size: 24rpx;
+  color: #666666;
+  text-align: center;
+  line-height: 1.4;
+  white-space: nowrap;
+}

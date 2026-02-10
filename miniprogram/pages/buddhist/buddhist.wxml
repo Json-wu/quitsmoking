@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="cd-wrapper">
+    <view class="cd-container {{isPlaying ? 'rotating' : ''}}">
+      <image class="cd-image" src="/assets/images/cd.svg" mode="aspectFit"></image>
+    </view>
+    <!-- 留声机探针 -->
+    <view class="tonearm {{isPlaying ? 'playing' : ''}}">
+      <view class="tonearm-base"></view>
+      <view class="tonearm-arm"></view>
+      <view class="tonearm-head"></view>
+    </view>
+  </view>
+  
+  <view class="text">佛性戒烟</view>
+  
+  <view class="controls">
+    <button class="control-btn" bindtap="handleShowLink">
+      <image class="btn-icon" src="/assets/icons/download.svg" mode="aspectFit"></image>
+      <text>下载</text>
+    </button>
+    
+    <button class="control-btn play-btn" bindtap="handlePlayPause">
+      <image class="btn-icon" src="{{isPlaying ? '/assets/icons/pause.svg' : '/assets/icons/play.svg'}}" mode="aspectFit"></image>
+      <text>{{isPlaying ? '暂停' : '播放'}}</text>
+    </button>
+    
+    <button class="control-btn" open-type="share">
+      <image class="btn-icon" src="/assets/icons/share2.svg" mode="aspectFit"></image>
+      <text>分享</text>
+    </button>
+  </view>
+  
+  <!-- 链接地址显示区域 -->
+  <view class="link-section" wx:if="{{showLink}}">
+    <view class="link-label">音乐链接地址：</view>
+    <view class="link-url">{{musicUrl}}</view>
+    <button class="copy-btn" bindtap="handleCopyLink">复制链接地址</button>
+  </view>
+</view>

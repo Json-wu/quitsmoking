@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <defs>
+    <radialGradient id="cdGradient">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="20%" stop-color="#333333"/>
+      <stop offset="40%" stop-color="#1a1a1a"/>
+      <stop offset="60%" stop-color="#000000"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+  </defs>
+  <circle cx="250" cy="250" r="250" fill="url(#cdGradient)"/>
+  <circle cx="250" cy="250" r="50" fill="#ffffff"/>
+  <circle cx="250" cy="250" r="25" fill="#000000"/>
+</svg>

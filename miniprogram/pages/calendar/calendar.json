@@ -1,5 +1,7 @@
 {
   "usingComponents": {},
   "navigationBarTitleText": "签到日历",
+  "navigationBarBackgroundColor": "#ffffffd8",
+  "navigationBarTextStyle": "black",
   "enablePullDownRefresh": true
 }

@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "快来加入我们吧",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "game-scroll": "/components/game-scroll/game-scroll"
+  }
+}

@@ -85,39 +85,6 @@
     </view>
   </view>
 
-  <!-- 隐私设置 -->
-  <view class="settings-section card">
-    <view class="section-title">隐私设置</view>
-    
-    <view class="setting-item">
-      <view class="item-left">
-        <text class="item-icon">👥</text>
-        <text class="item-label">显示在排行榜</text>
-      </view>
-      <view class="item-right">
-        <switch 
-          checked="{{ showInRanking }}" 
-          bindchange="onShowInRankingChange"
-          color="#FF6B6B"
-        />
-      </view>
-    </view>
-
-    <view class="setting-item">
-      <view class="item-left">
-        <text class="item-icon">📊</text>
-        <text class="item-label">公开我的数据</text>
-      </view>
-      <view class="item-right">
-        <switch 
-          checked="{{ publicData }}" 
-          bindchange="onPublicDataChange"
-          color="#FF6B6B"
-        />
-      </view>
-    </view>
-  </view>
-
   <!-- 其他设置 -->
   <view class="settings-section card">
     <view class="section-title">其他</view>

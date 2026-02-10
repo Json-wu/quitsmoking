@@ -1,125 +1,118 @@
 <!--pages/index/index.wxml-->
 <view class="container">
-  <!-- 戒烟天数展示区 -->
-  <view class="quit-days-section">
-    <view class="quit-icon">🚭</view>
-    <view class="quit-title">我已戒烟</view>
-    <view class="quit-days-wrapper">
-      <text class="quit-days-number">{{ quitDays }}</text>
-      <text class="quit-days-unit">天</text>
+  <!-- 顶部功能图标 -->
+  <view class="top-icons">
+    <view class="top-icon-item" bindtap="goToCalendar">
+        <image class="icon-svg" src="/assets/icons/dashboard.svg" mode="aspectFit"></image>
+      <text class="icon-label">看板</text>
     </view>
-    <view class="quit-subtitle" wx:if="{{ quitDays > 0 }}">
-      <!-- 距离目标还有 {{ targetDays }} 天 -->
+    <view class="top-icon-item" bindtap="goToRefuse">
+        <image class="icon-svg" src="/assets/icons/shield.svg" mode="aspectFit"></image>
+      <text class="icon-label">护盾</text>
     </view>
-    <view class="quit-subtitle" wx:else>
-      <text class="text-tertiary">点击下方设置开始戒烟日期</text>
+    <view class="top-icon-item" bindtap="goToBreathing">
+        <image class="icon-svg" src="/assets/icons/breath.svg" mode="aspectFit"></image>
+      <text class="icon-label">呼吸</text>
+    </view>
+    <button class="top-icon-item top-icon-btn" open-type="share">
+        <image class="icon-svg" src="/assets/icons/share.svg" mode="aspectFit"></image>
+      <text class="icon-label">分享</text>
+    </button>
+  </view>
+
+  <!-- 签到统计提示 -->
+  <view class="checkin-stats-tip">
+     <image class="icon-svg" src="/assets/icons/groups.svg" mode="aspectFit"></image>
+    <text class="stats-text">今日{{ todayCheckinCount }}人签到戒烟</text>
+  </view>
+
+  <!-- 签到卡片 -->
+  <view class="checkin-card">
+    <view class="checkin-user">
+      <text class="user-icon">👨‍⚕️</text>
+      <text class="user-title">戒烟达人</text>
+    </view>
+    <button 
+      class="checkin-btn {{ hasCheckedToday ? 'checked' : '' }}" 
+      bindtap="handleCheckin"
+    >
+      {{ hasCheckedToday ? '今日已签到' : '签到' }}
+    </button>
+  </view>
+
+  <!-- 功能网格 -->
+  <view class="function-grid">
+     <view class="function-item" bindtap="goToCertificate">
+       <image class="icon-svg" src="/assets/icons/clendar.svg" mode="aspectFit"></image>
+      <view class="date-info">
+        <text class="date-text">{{ todayDate }}</text>
+        <text class="date-label">荣誉证书</text>
+      </view>
+    </view>
+    <view class="function-item" bindtap="goToCalendar">
+      <view class="quit-days-badge">
+        <text class="badge-number">{{ quitDays }}</text>
+      </view>
+      <view class="quit-info">
+        <text class="quit-label">戒烟{{ quitDays }}天</text>
+        <text class="quit-sublabel">明天有惊喜</text>
+      </view>
+    </view>
+    <view class="function-item" bindtap="goToCamp">
+      <image class="icon-svg" src="/assets/icons/faction.svg" mode="aspectFit"></image>
+      <view class="function-text">
+        <text class="func-title">戒烟阵营</text>
+        <text class="func-desc">学习与分享</text>
+      </view>
+    </view>
+    <!--<view class="function-item" bindtap="goToSettings">
+      <image class="icon-svg" src="/assets/icons/plan.svg" mode="aspectFit"></image>
+      <view class="function-text">
+        <text class="func-title">添加计划</text>
+        <text class="func-desc">制定周期提醒</text>
+      </view>
+      <view class="func-badge">热</view>
+    </view>
+    <view class="function-item" bindtap="goToMethods">
+      <image class="icon-svg" src="/assets/icons/stop.svg" mode="aspectFit"></image>
+      <view class="function-text">
+        <text class="func-title">戒烟方法</text>
+        <text class="func-desc">90%用户推荐</text>
+      </view>
+    </view>-->
+    <view class="function-item" bindtap="goToProfile">
+      <image class="icon-svg" src="/assets/icons/total.svg" mode="aspectFit"></image>
+      <view class="function-text">
+        <text class="func-title">我的数据</text>
+        <text class="func-desc">数据分析统计</text>
+      </view>
+      <view class="func-badge">热</view>
     </view>
   </view>
 
-  <!-- 签到区域 -->
-  <view class="checkin-section card">
-    <view class="checkin-header flex-between">
-      <view class="checkin-info">
-        <text class="checkin-label">连续签到</text>
-        <text class="checkin-days">{{ currentStreak }}天</text>
-      </view>
-      <view class="checkin-info">
-        <text class="checkin-label">累计签到</text>
-        <text class="checkin-days">{{ totalCheckin }}天</text>
-      </view>
+  <!-- 缓解烟瘾 -->
+  <view class="relief-section">
+    <view class="relief-header">
+      <text class="relief-title">缓解烟瘾</text>
+      <button class="relief-btn" bindtap="goToBuddhist">前往佛性戒烟</button>
     </view>
-    
-    <view class="checkin-button-wrapper">
-      <button 
-        class="checkin-button {{ hasCheckedToday ? 'checked' : '' }}" 
-        bindtap="handleCheckin"
-        disabled="{{ hasCheckedToday }}"
-      >
-        <text class="checkin-button-icon">{{ hasCheckedToday ? '✓' : '📝' }}</text>
-        <text class="checkin-button-text">{{ hasCheckedToday ? '今日已签到' : '点击签到' }}</text>
-      </button>
-    </view>
-
-    <view class="checkin-footer">
-      <text class="checkin-tip" bindtap="goToCalendar">查看签到日历 ></text>
-    </view>
-  </view>
-
-  <!-- 快捷入口 -->
-  <view class="quick-entry-section">
-    <view class="section-title">快捷入口</view>
-    <view class="quick-entry-grid">
-      <view class="quick-entry-item" bindtap="goToCigarette">
-        <view class="quick-entry-icon">🚬</view>
-        <text class="quick-entry-name">电子烟</text>
-      </view>
-      <view class="quick-entry-item" bindtap="goToRefuse">
-        <view class="quick-entry-icon">🛡️</view>
-        <text class="quick-entry-name">拒烟神器</text>
-      </view>
-      <view class="quick-entry-item" bindtap="goToCertificate">
-        <view class="quick-entry-icon">🏆</view>
-        <text class="quick-entry-name">荣誉证书</text>
-      </view>
-      <view class="quick-entry-item" bindtap="goToMethods">
-        <view class="quick-entry-icon">📚</view>
-        <text class="quick-entry-name">戒烟方法</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 健康收益统计 -->
-  <view class="health-stats-section card">
-    <view class="section-title">健康收益</view>
-    <view class="health-stats-grid">
-      <view class="health-stat-item">
-        <view class="health-stat-icon">💰</view>
-        <view class="health-stat-value">¥{{ savedMoney }}</view>
-        <view class="health-stat-label">节省金额</view>
-      </view>
-      <view class="health-stat-item">
-        <view class="health-stat-icon">🚬</view>
-        <view class="health-stat-value">{{ savedCigarettes }}</view>
-        <view class="health-stat-label">少抽香烟</view>
-      </view>
-      <view class="health-stat-item">
-        <view class="health-stat-icon">❤️</view>
-        <view class="health-stat-value">{{ healthIndex }}%</view>
-        <view class="health-stat-label">健康指数</view>
-      </view>
-    </view>
-    <view class="health-tip">
-      <text class="text-sm text-secondary">坚持戒烟，健康生活每一天</text>
+    <view class="relief-canvas-wrapper">
+      <canvas 
+        type="2d" 
+        id="relief-cigarette-canvas" 
+        class="relief-cigarette-canvas"
+        bindtap="goToCigarette"
+      ></canvas>
     </view>
   </view>
 
   <!-- Banner广告 -->
-  <view class="ad-section">
+  <!-- <view class="ad-section">
     <ad unit-id="adunit-xxxxxxxxxxxxxxxx" ad-type="banner" ad-theme="white"></ad>
-  </view>
-</view>
+  </view> -->
 
-<!-- 设置戒烟日期弹窗 -->
-<view class="modal-mask" wx:if="{{ showDatePicker }}" bindtap="closeDatePicker">
-  <view class="modal-content" catchtap="stopPropagation">
-    <view class="modal-header">
-      <text class="modal-title">设置开始戒烟日期</text>
-    </view>
-    <view class="modal-body">
-      <picker 
-        mode="date" 
-        value="{{ quitDate }}" 
-        end="{{ today }}"
-        bindchange="onDateChange"
-      >
-        <view class="date-picker">
-          <text>{{ quitDate || '请选择日期' }}</text>
-        </view>
-      </picker>
-    </view>
-    <view class="modal-footer">
-      <button class="modal-button cancel" bindtap="closeDatePicker">取消</button>
-      <button class="modal-button confirm" bindtap="confirmQuitDate">确定</button>
-    </view>
+  <!-- 小游戏快捷入口 -->
+  <view class="games-section">
+    <game-scroll title="休闲时刻" games="{{gameList}}" auto-scroll="{{true}}" scroll-speed="{{0.5}}"></game-scroll>
   </view>
 </view>

@@ -1,7 +1,9 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "我要戒烟",
+  "usingComponents": {
+    "game-scroll": "/components/game-scroll/game-scroll"
+  },
   "enablePullDownRefresh": true,
+  "navigationStyle": "custom",
   "backgroundColor": "#F5F5F5",
   "backgroundTextStyle": "dark"
 }

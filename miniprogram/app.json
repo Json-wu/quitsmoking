@@ -2,6 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/cigarette/cigarette",
+    "pages/buddhist/buddhist",
+    "pages/camp/camp",
     "pages/certificate/certificate",
     "pages/refuse/refuse",
     "pages/methods/methods",
@@ -9,7 +11,8 @@
     "pages/profile/profile",
     "pages/badges/badges",
     "pages/calendar/calendar",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/breathing/breathing"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -34,7 +37,7 @@
       },
       {
         "pagePath": "pages/cigarette/cigarette",
-        "text": "电子烟",
+        "text": "戒烟",
         "iconPath": "assets/icons/cigarette.png",
         "selectedIconPath": "assets/icons/cigarette-active.png"
       },

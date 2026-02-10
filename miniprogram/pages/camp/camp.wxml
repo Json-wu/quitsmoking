@@ -1,0 +1,28 @@
+<view class="container">
+  <!-- 加入步骤 -->
+  <view class="steps">
+    <view class="step-item">
+      <view class="step-number">1</view>
+      <view class="step-content">
+        <view class="step-title">第一步</view>
+        <view class="step-desc">
+          点击复制微信号: 
+          <text class="wechat-id" bindtap="handleCopyWechat">Riches_wu</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="step-item">
+      <view class="step-number">2</view>
+      <view class="step-content">
+        <view class="step-title">第二步</view>
+        <view class="step-desc">返回微信通讯录，右上角添加好友</view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 小游戏快捷入口 -->
+  <view class="games-section">
+    <game-scroll title="休闲时刻" games="{{gameList}}" auto-scroll="{{true}}" scroll-speed="{{0.5}}"></game-scroll>
+  </view>
+</view>

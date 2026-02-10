@@ -1,0 +1,22 @@
+<!--pages/breathing/breathing.wxml-->
+<view class="container">
+  <view class="content">
+    <!-- 顶部提示文字 -->
+    <view class="step-text">{{ stepText }}</view>
+    
+    <!-- 肺部图片 -->
+    <view class="lung-container">
+      <image 
+        class="lung-image {{ isBreathing ? 'breathing' : '' }}" 
+        src="/assets/images/fb.png" 
+        mode="aspectFit"
+      ></image>
+    </view>
+    
+    <!-- 倒计时提示 -->
+    <view class="countdown-text" wx:if="{{ countdown > 0 }}">剩余时间{{ countdown }}秒</view>
+    
+    <!-- 下一步按钮 -->
+    <button class="next-btn {{ countdown > 0 ? 'disabled' : '' }}" bindtap="handleNext" disabled="{{ countdown > 0 }}">{{ buttonText }}</button>
+  </view>
+</view>

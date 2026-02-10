@@ -1,0 +1,26 @@
+<view class="game-scroll">
+  <view class="games-title">{{title}}</view>
+  <view class="games-grid-wrapper" 
+        bindtouchstart="handleTouchStart" 
+        bindtouchmove="handleTouchMove" 
+        bindtouchend="handleTouchEnd">
+    <view class="games-grid" style="transform: translateX(-{{scrollLeft}}px);">
+      <block wx:for="{{games}}" wx:key="appId">
+        <view class="game-item" bindtap="handleGameTap" data-appid="{{item.appId}}">
+          <image wx:if="{{item.icon}}" class="game-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          <view wx:else class="game-icon">{{item.emoji}}</view>
+          <view class="game-name">{{item.name}}</view>
+        </view>
+      </block>
+      
+      <!-- 复制一份用于无缝循环 -->
+      <block wx:for="{{games}}" wx:key="appId">
+        <view class="game-item" bindtap="handleGameTap" data-appid="{{item.appId}}">
+          <image wx:if="{{item.icon}}" class="game-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          <view wx:else class="game-icon">{{item.emoji}}</view>
+          <view class="game-name">{{item.name}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

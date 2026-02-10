@@ -1,39 +1,41 @@
 <!--pages/profile/profile.wxml-->
 <view class="container">
-  <!-- 用户信息区域 -->
-  <!--<view class="user-section card">
-    <view class="user-info">
-      <image class="avatar" src="{{ userInfo.avatarUrl || '/assets/images/default-avatar.png' }}" mode="aspectFill"></image>
-      <view class="user-detail">
-        <text class="nickname">{{ userInfo.nickName || '未登录' }}</text>
-        <view class="user-badge">
-          <text class="badge-icon">🏆</text>
-          <text class="badge-text">{{ badgeLevel }}</text>
+  <!-- 戒烟成就卡片 -->
+  <view class="achievement-card">
+    <view class="achievement-main">
+      <view class="days-display">
+        <text class="days-number">{{ quitDays }}</text>
+        <text class="days-unit">天</text>
+      </view>
+      <text class="days-label">已坚持戒烟</text>
+    </view>
+
+    <view class="achievement-stats">
+      <view class="stat-item" bindtap="showEditModal">
+        <text class="stat-icon">🚭</text>
+        <view class="stat-info">
+          <text class="stat-value">{{ savedCigarettes }}</text>
+          <text class="stat-label">少抽香烟(根)</text>
+        </view>
+      </view>
+      <view class="stat-item" bindtap="showEditModal">
+        <text class="stat-icon">💰</text>
+        <view class="stat-info">
+          <text class="stat-value">{{ savedMoney }}</text>
+          <text class="stat-label">节省金额(元)</text>
         </view>
       </view>
     </view>
-  </view>-->
 
-  <!-- 数据统计 -->
-  <view class="stats-section">
-    <view class="stats-grid">
-      <view class="stat-card">
-        <text class="stat-number">{{ totalCheckin }}</text>
-        <text class="stat-label">签到天数</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-number">{{ cigaretteCount }}</text>
-        <text class="stat-label">电子烟</text>
-      </view>
-      <view class="stat-card">
-        <text class="stat-number">{{ shareCount }}</text>
-        <text class="stat-label">递烟次数</text>
-      </view>
-    </view>
+    <!-- 分享按钮 -->
+    <button class="share-btn" open-type="share">
+      <image class="share-icon" src="/assets/icons/share.svg" mode="aspectFit"></image>
+      <text class="share-text">分享经历</text>
+    </button>
   </view>
 
   <!-- 我的勋章 -->
-  <view class="badges-section card" bindtap="goToBadges">
+  <!--<view class="badges-section card" bindtap="goToBadges">
     <view class="section-header">
       <text class="section-title">我的勋章</text>
       <view class="header-right">
@@ -41,38 +43,38 @@
         <image class="menu-arrow" src="/assets/icons/arrow-right.svg" mode="aspectFit"></image>
       </view>
     </view>
-  </view>
+  </view>-->
 
   <!-- 功能入口 -->
   <view class="menu-section">
-    <view class="menu-item" bindtap="goToCertificate">
+    <!--<view class="menu-item" bindtap="goToCertificate">
       <view class="menu-left">
         <text class="menu-icon">🏆</text>
         <text class="menu-title">我的证书</text>
       </view>
       <image class="menu-arrow" src="/assets/icons/arrow-right.svg" mode="aspectFit"></image>
-    </view>
-    <view class="menu-item" bindtap="goToCollection">
+    </view>-->
+    <!--<view class="menu-item" bindtap="goToCollection">
       <view class="menu-left">
         <text class="menu-icon">⭐</text>
         <text class="menu-title">我的收藏</text>
       </view>
       <image class="menu-arrow" src="/assets/icons/arrow-right.svg" mode="aspectFit"></image>
-    </view>
-    <view class="menu-item" bindtap="goToCalendar">
+    </view>-->
+    <!--<view class="menu-item" bindtap="goToCalendar">
       <view class="menu-left">
         <text class="menu-icon">📅</text>
         <text class="menu-title">签到日历</text>
       </view>
       <image class="menu-arrow" src="/assets/icons/arrow-right.svg" mode="aspectFit"></image>
-    </view>
-    <view class="menu-item" bindtap="goToSettings">
+    </view>-->
+    <!--<view class="menu-item" bindtap="goToSettings">
       <view class="menu-left">
         <text class="menu-icon">⚙️</text>
         <text class="menu-title">设置中心</text>
       </view>
       <image class="menu-arrow" src="/assets/icons/arrow-right.svg" mode="aspectFit"></image>
-    </view>
+    </view>-->
     <view class="menu-item" bindtap="handleFeedback">
       <view class="menu-left">
         <text class="menu-icon">💬</text>
@@ -82,8 +84,41 @@
     </view>
   </view>
 
-  <!-- Banner广告 -->
-  <view class="ad-section">
-    <ad unit-id="adunit-xxxxxxxxxxxxxxxx" ad-type="banner" ad-theme="white"></ad>
+  <!-- 小游戏快捷入口 -->
+  <view class="games-section">
+    <game-scroll title="休闲时刻" games="{{gameList}}" auto-scroll="{{true}}" scroll-speed="{{0.5}}"></game-scroll>
+  </view>
+
+  <!-- 编辑抽烟数据弹窗 - 从底部滑出 -->
+  <view class="modal-mask {{ modalClosing ? 'closing' : '' }}" wx:if="{{ showModal }}" bindtap="hideEditModalWithSave">
+    <view class="modal-content {{ modalClosing ? 'closing' : '' }}" catchtap="stopPropagation">
+      <view class="modal-header">
+        <view class="modal-close" bindtap="hideEditModalWithSave">✕</view>
+      </view>
+      
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">每天抽几根</text>
+          <input 
+            class="form-input" 
+            type="number" 
+            value="{{ dailyCigarettes }}" 
+            bindinput="onDailyCigarettesInput"
+            placeholder="0"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">一包烟多少钱</text>
+          <input 
+            class="form-input" 
+            type="digit" 
+            value="{{ cigarettePrice }}" 
+            bindinput="onCigarettePriceInput"
+            placeholder="0"
+          />
+        </view>
+      </view>
+    </view>
   </view>
 </view>

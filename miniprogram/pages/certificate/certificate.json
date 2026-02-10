@@ -1,5 +1,7 @@
 {
   "usingComponents": {},
   "navigationBarTitleText": "荣誉证书",
+  "navigationBarBackgroundColor": "#ffffffd8",
+  "navigationBarTextStyle": "black",
   "disableScroll": false
 }
