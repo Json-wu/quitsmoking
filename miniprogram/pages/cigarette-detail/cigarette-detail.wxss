@@ -1,4 +1,4 @@
-/* pages/cigarette/cigarette.wxss */
+/* pages/cigarette-detail/cigarette-detail.wxss */
 
 .container {
   height: 100vh;

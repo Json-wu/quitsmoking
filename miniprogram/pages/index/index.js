@@ -88,7 +88,8 @@ Page({
   async initPage() {
     // 设置今天日期
     const today = app.formatDate(new Date(), 'YYYY-MM-DD');
-    const todayDate = app.formatDate(new Date(), 'YYYY-MM-DD');
+    // 荣誉证书显示开始戒烟日期
+    const todayDate = app.globalData.quitDate || app.formatDate(new Date(), 'YYYY-MM-DD');
     this.setData({ today, todayDate });
 
     // 初始化最近7天数据
@@ -452,9 +453,8 @@ Page({
    * 跳转到电子烟
    */
   goToCigarette() {
-    console.log('跳转到电子烟');
-    wx.switchTab({
-      url: "/pages/cigarette/cigarette"
+    wx.navigateTo({
+      url: '/pages/cigarette-detail/cigarette-detail'
     });
   },
 

@@ -137,5 +137,26 @@ Page({
       buttonText: '下一步',
       isBreathing: true
     });
+  },
+
+  /**
+   * 跳转到电子烟页面
+   */
+  goToCigarette() {
+    // 跳转到电子烟详情页（非tabBar页面），可以显示返回按钮
+    wx.navigateTo({
+      url: '/pages/cigarette-detail/cigarette-detail'
+    });
+  },
+
+  /**
+   * 分享给微信好友
+   */
+  onShareAppMessage() {
+    return {
+      title: '今日的呼吸训练做了吗？',
+      path: '/pages/breathing/breathing',
+      imageUrl: '/assets/images/fb.png'
+    };
   }
 });

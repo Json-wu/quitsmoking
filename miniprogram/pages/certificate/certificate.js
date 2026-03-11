@@ -1,19 +1,23 @@
 // pages/certificate/certificate.js
 const app = getApp();
 const certificateService = require('../../services/certificate.js');
-const { getCanvasNode, drawGradientBackground, drawRoundRect, drawCenterText, canvasToTempFilePath } = require('../../utils/canvas.js');
+const { getCanvasNode, canvasToTempFilePath } = require('../../utils/canvas.js');
 const { formatDate } = require('../../utils/date.js');
 
 Page({
   data: {
     quitDays: 0,
-    certificateLevel: '',
     certificateDate: '',
     generating: false,
     hasGenerated: false,
     tempFilePath: '',
-    levels: [],
-    loading: true
+    loading: true,
+    currentTemplate: 'template1',
+    templates: [
+      { id: 'template1', name: '模板一', icon: '📜', bgImage: '/assets/images/cert1.jpeg' },
+      { id: 'template2', name: '模板二', icon: '🎨', bgImage: '/assets/images/cert2.jpeg' },
+      { id: 'template3', name: '模板三', icon: '✨', bgImage: '/assets/images/cert3.jpeg' }
+    ]
   },
 
   async onLoad(options) {
@@ -23,15 +27,17 @@ Page({
     await this.autoGenerateCertificate();
   },
 
-  onShareAppMessage() {
-    if (this.data.hasGenerated && this.data.tempFilePath) {
-      return {
-        title: `我已成功戒烟${this.data.quitDays}天，获得${this.data.certificateLevel}！`,
-        path: '/pages/index/index',
-        imageUrl: this.data.tempFilePath
-      };
+  async onShareAppMessage() {
+    // 确保使用当前选中的模板生成最新的证书
+    if (!this.data.hasGenerated || !this.data.tempFilePath) {
+      await this.autoGenerateCertificate();
     }
-    return certificateService.shareCertificate(this.data.quitDays, this.data.certificateLevel);
+    
+    return {
+      title: `我已成功戒烟${this.data.quitDays}天！`,
+      path: '/pages/index/index',
+      imageUrl: this.data.tempFilePath || ''
+    };
   },
 
   /**
@@ -40,24 +46,10 @@ Page({
   initData() {
     const globalData = app.globalData;
     const quitDays = globalData.quitDays || 0;
-    const level = certificateService.getCertificateLevel(quitDays);
-    const config = certificateService.getCertificateConfig(level);
-
-    // 设置等级列表
-    const levels = [
-      { level: 'beginner', name: '初级证书', icon: '🌱', days: 7, unlocked: quitDays >= 7 },
-      { level: 'intermediate', name: '中级证书', icon: '🌳', days: 30, unlocked: quitDays >= 30 },
-      { level: 'advanced', name: '高级证书', icon: '🛡️', days: 90, unlocked: quitDays >= 90 },
-      { level: 'expert', name: '专家证书', icon: '🏆', days: 180, unlocked: quitDays >= 180 },
-      { level: 'master', name: '大师证书', icon: '👑', days: 365, unlocked: quitDays >= 365 },
-      { level: 'grandmaster', name: '宗师证书', icon: '⭐', days: 730, unlocked: quitDays >= 730 }
-    ];
 
     this.setData({
       quitDays,
-      certificateLevel: config.name,
-      certificateDate: formatDate(new Date(), 'YYYY-MM-DD'),
-      levels
+      certificateDate: formatDate(new Date(), 'YYYY-MM-DD')
     });
   },
 
@@ -71,8 +63,46 @@ Page({
       this.ctx = ctx;
       this.canvasWidth = width;
       this.canvasHeight = height;
+      console.log('Canvas初始化成功:', { width, height });
     } catch (err) {
       console.error('Canvas初始化失败:', err);
+      this.setData({ loading: false });
+      wx.showToast({
+        title: 'Canvas初始化失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  /**
+   * 切换模板
+   */
+  async handleTemplateChange(e) {
+    const template = e.currentTarget.dataset.template;
+    this.setData({ currentTemplate: template });
+    
+    // 只重绘背景，不重绘文字
+    await this.drawCertificateBackground();
+    
+    // 转换为图片并更新
+    try {
+      const tempFilePath = await canvasToTempFilePath(this.canvas, {
+        x: 0,
+        y: 0,
+        width: this.canvasWidth,
+        height: this.canvasHeight,
+        destWidth: this.canvasWidth * 2,
+        destHeight: this.canvasHeight * 2,
+        fileType: 'png',
+        quality: 1
+      });
+
+      this.setData({
+        hasGenerated: true,
+        tempFilePath
+      });
+    } catch (err) {
+      console.error('生成证书图片失败:', err);
     }
   },
 
@@ -80,15 +110,6 @@ Page({
    * 自动生成证书
    */
   async autoGenerateCertificate() {
-    if (this.data.quitDays < 7) {
-      this.setData({ loading: false });
-      wx.showToast({
-        title: '戒烟满7天后可获得证书',
-        icon: 'none'
-      });
-      return;
-    }
-
     try {
       this.setData({ generating: true, loading: true });
 
@@ -178,94 +199,141 @@ Page({
   },
 
   /**
-   * 绘制证书
+   * 绘制证书（完整版：背景+内容）
    */
   async drawCertificate() {
     const ctx = this.ctx;
     const width = this.canvasWidth;
     const height = this.canvasHeight;
-    const { quitDays } = this.data;
+    const { currentTemplate, templates } = this.data;
 
-    // 获取证书配置
-    const level = certificateService.getCertificateLevel(quitDays);
-    const config = certificateService.getCertificateConfig(level);
+    console.log('开始绘制证书');
+
+    if (!ctx || !width || !height) {
+      console.error('Canvas未初始化');
+      return;
+    }
 
     // 清空画布
     ctx.clearRect(0, 0, width, height);
 
-    // 绘制浅色背景（类似图片中的米色）
-    ctx.fillStyle = '#F5EDE4';
-    ctx.fillRect(0, 0, width, height);
+    // 获取当前模板配置
+    const template = templates.find(t => t.id === currentTemplate) || templates[0];
+    console.log('使用模板:', template);
+    
+    // 绘制背景图片
+    await this.drawBackgroundImage(ctx, template.bgImage, width, height);
 
-    // 定义内容区域
+    // 绘制文字内容
+    this.drawCertificateContent(ctx, width, height);
+  },
+
+  /**
+   * 仅绘制背景（用于切换模板）
+   */
+  async drawCertificateBackground() {
+    const ctx = this.ctx;
+    const width = this.canvasWidth;
+    const height = this.canvasHeight;
+    const { currentTemplate, templates } = this.data;
+
+    if (!ctx || !width || !height) {
+      console.error('Canvas未初始化');
+      return;
+    }
+
+    // 清空画布
+    ctx.clearRect(0, 0, width, height);
+
+    // 获取当前模板配置
+    const template = templates.find(t => t.id === currentTemplate) || templates[0];
+    
+    // 绘制背景图片
+    await this.drawBackgroundImage(ctx, template.bgImage, width, height);
+
+    // 重新绘制文字内容（覆盖在新背景上）
+    this.drawCertificateContent(ctx, width, height);
+  },
+
+  /**
+   * 绘制证书文字内容
+   */
+  drawCertificateContent(ctx, width, height) {
+    const { quitDays } = this.data;
     const padding = 40;
     const contentX = padding;
     const contentY = padding;
-    const contentWidth = width - padding * 2;
-    const contentHeight = height - padding * 2;
-
-    // 绘制边框图片（如果有）
-    if (config.borderImage) {
-      await this.drawBorderImage(ctx, config.borderImage, width, height);
-    } else {
-      // 降级方案：绘制简单边框
-      this.drawSimpleBorder(ctx, config, contentX, contentY, contentWidth, contentHeight);
-    }
-
-    // 绘制顶部横线装饰
-    // ctx.save();
-    // ctx.strokeStyle = config.color;
-    // ctx.lineWidth = 2;
-    // ctx.beginPath();
-    // ctx.moveTo(contentX + 80, contentY + 50);
-    // ctx.lineTo(width - contentX - 80, contentY + 50);
-    // ctx.stroke();
-    // ctx.restore();
-
-    // 绘制大标题
-    ctx.font = 'bold 30px serif';
-    ctx.fillStyle = 'red';
-    ctx.textAlign = 'center';
-    ctx.letterSpacing = '10px';
-    ctx.fillText('荣誉证书', width / 2, 50);
-    ctx.letterSpacing = '0px';
-
-    // 绘制称呼
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillStyle = '#000000';
-    ctx.textAlign = 'left';
-    ctx.fillText('尊敬的戒烟达人：', 40, 90);
 
     // 获取戒烟开始日期
     const quitStartDate = app.globalData.quitDate || '2026-01-16';
     
-    // 绘制正文内容
+    // 绘制文字内容（带阴影以增强可读性）
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+
+    // 绘制称呼
     ctx.font = 'bold 14px sans-serif';
-    ctx.fillStyle = '#f4e622ff';
+    ctx.fillStyle = '#000000';
+    ctx.textAlign = 'left';
+    ctx.fillText('尊敬的戒烟达人：', contentX + 10, contentY + 70);
+
+    // 绘制正文内容
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = '#000000';
     ctx.textAlign = 'center';
-    const contentText = `${quitStartDate} 开始戒烟，已戒${quitDays}天！`;
-    ctx.fillText(contentText, 180, 120);
+    const contentText = `${quitStartDate} 开始戒烟，已戒 ${quitDays} 天！`;
+    ctx.fillText(contentText, width / 2, contentY + 100);
 
-    // 绘制鼓励语（根据等级显示不同内容）
-    ctx.font = 'bold 24px sans-serif';
-    ctx.fillStyle = '#f4e622ff';
-    ctx.fillText(config.encouragement || '重点鼓励', width/2, 160);
-
-    // 绘制底部横线装饰
-    // ctx.save();
-    // ctx.strokeStyle = config.color;
-    // ctx.lineWidth = 2;
-    // ctx.beginPath();
-    // ctx.moveTo(contentX + 80, height - contentY - 50);
-    // ctx.lineTo(width - contentX - 80, height - contentY - 50);
-    // ctx.stroke();
-    // ctx.restore();
+    // 绘制鼓励语
+    ctx.font = 'bold 16px sans-serif';
+    ctx.fillStyle = '#000000';
+    const encouragement = '重点鼓励';
+    ctx.fillText(encouragement, width / 2, contentY + 130);
 
     // 绘制签名
-    ctx.font = '18px sans-serif';
-    ctx.fillStyle = config.color;
-    ctx.textAlign = 'right';
-    ctx.fillText('我要戒烟', width  - 20, height - 20);
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#d01a1a';
+    ctx.fillText('我要戒烟', width - contentX - 40, height - contentY + 5);
+
+    // 清除阴影效果
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  },
+
+  /**
+   * 绘制背景图片
+   */
+  async drawBackgroundImage(ctx, imagePath, width, height) {
+    try {
+      console.log('开始加载背景图片:', imagePath);
+      // 加载背景图片
+      const img = this.canvas.createImage();
+      await new Promise((resolve, reject) => {
+        img.onload = () => {
+          console.log('背景图片加载成功');
+          resolve();
+        };
+        img.onerror = (err) => {
+          console.error('背景图片加载错误:', err);
+          reject(err);
+        };
+        img.src = imagePath;
+      });
+      
+      // 绘制背景图片（覆盖整个画布）
+      ctx.drawImage(img, 0, 0, width, height);
+      console.log('背景图片绘制完成');
+    } catch (err) {
+      console.error('背景图片加载失败:', err, imagePath);
+      // 加载失败时使用纯色背景
+      ctx.fillStyle = '#F5EDE4';
+      ctx.fillRect(0, 0, width, height);
+      console.log('使用纯色背景降级');
+    }
   },
 
   /**
@@ -307,10 +375,10 @@ Page({
   },
 
   /**
-   * 绘制简单边框（降级方案）
+   * 绘制简单边框
    */
   drawSimpleBorder(ctx, config, x, y, width, height) {
-    const color = config.color;
+    const color = config.borderColor;
     
     ctx.save();
     ctx.strokeStyle = color;
@@ -338,161 +406,5 @@ Page({
     });
     
     ctx.restore();
-  },
-
-  /**
-   * 根据等级绘制不同的边框（已废弃，保留用于兼容）
-   */
-  drawLevelBorder_deprecated(ctx, level, config, width, height) {
-    // 边框位置参数（与白色内容区域对齐）
-    const contentPadding = 50;
-    const contentY = 60;
-    const contentHeight = height - 120;
-    
-    const borderConfigs = {
-      beginner: () => {
-        // 初级：简单单线边框
-        ctx.save();
-        ctx.strokeStyle = config.bgGradient[0];
-        ctx.lineWidth = 3;
-        drawRoundRect(ctx, contentPadding + 8, contentY + 8, width - (contentPadding + 8) * 2, contentHeight - 16, 12);
-        ctx.stroke();
-        ctx.restore();
-      },
-      intermediate: () => {
-        // 中级：双线边框
-        ctx.save();
-        ctx.strokeStyle = config.bgGradient[0];
-        ctx.lineWidth = 3;
-        drawRoundRect(ctx, contentPadding + 8, contentY + 8, width - (contentPadding + 8) * 2, contentHeight - 16, 12);
-        ctx.stroke();
-        ctx.lineWidth = 2;
-        drawRoundRect(ctx, contentPadding + 14, contentY + 14, width - (contentPadding + 14) * 2, contentHeight - 28, 10);
-        ctx.stroke();
-        ctx.restore();
-      },
-      advanced: () => {
-        // 高级：装饰性边框
-        ctx.save();
-        ctx.strokeStyle = config.bgGradient[0];
-        ctx.lineWidth = 4;
-        drawRoundRect(ctx, contentPadding + 8, contentY + 8, width - (contentPadding + 8) * 2, contentHeight - 16, 12);
-        ctx.stroke();
-        
-        // 绘制四角装饰
-        ctx.fillStyle = config.bgGradient[0];
-        const corners = [
-          [contentPadding + 8, contentY + 8], 
-          [width - contentPadding - 8, contentY + 8], 
-          [contentPadding + 8, contentY + contentHeight - 8], 
-          [width - contentPadding - 8, contentY + contentHeight - 8]
-        ];
-        corners.forEach(([x, y]) => {
-          ctx.beginPath();
-          ctx.arc(x, y, 6, 0, Math.PI * 2);
-          ctx.fill();
-        });
-        ctx.restore();
-      },
-      expert: () => {
-        // 专家：华丽边框
-        ctx.save();
-        // 外层边框
-        ctx.strokeStyle = config.bgGradient[0];
-        ctx.lineWidth = 5;
-        drawRoundRect(ctx, contentPadding + 6, contentY + 6, width - (contentPadding + 6) * 2, contentHeight - 12, 14);
-        ctx.stroke();
-        
-        // 内层边框
-        ctx.strokeStyle = config.bgGradient[1];
-        ctx.lineWidth = 2;
-        drawRoundRect(ctx, contentPadding + 16, contentY + 16, width - (contentPadding + 16) * 2, contentHeight - 32, 10);
-        ctx.stroke();
-        
-        // 绘制装饰线条
-        ctx.strokeStyle = config.bgGradient[0];
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 5]);
-        drawRoundRect(ctx, contentPadding + 11, contentY + 11, width - (contentPadding + 11) * 2, contentHeight - 22, 12);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.restore();
-      },
-      master: () => {
-        // 大师：彩虹渐变边框
-        ctx.save();
-        
-        // 绘制多层彩色边框
-        const colors = config.bgGradient;
-        const layers = 5;
-        for (let i = 0; i < layers; i++) {
-          ctx.strokeStyle = colors[i % colors.length];
-          ctx.lineWidth = 3;
-          const offset = contentPadding + 6 + i * 3;
-          const yOffset = contentY + 6 + i * 3;
-          drawRoundRect(ctx, offset, yOffset, width - offset * 2, contentHeight - 12 - i * 6, 14 - i);
-          ctx.stroke();
-        }
-        
-        // 绘制星星装饰（调整位置）
-        ctx.fillStyle = '#FFD700';
-        const stars = [
-          [width / 2, contentY - 10],
-          [contentPadding + 20, contentY + 30], 
-          [width - contentPadding - 20, contentY + 30],
-          [contentPadding + 20, contentY + contentHeight - 30], 
-          [width - contentPadding - 20, contentY + contentHeight - 30]
-        ];
-        stars.forEach(([x, y]) => {
-          this.drawStar(ctx, x, y, 8, 5);
-        });
-        
-        ctx.restore();
-      }
-    };
-
-    const drawBorder = borderConfigs[level] || borderConfigs.beginner;
-    drawBorder();
-  },
-
-  /**
-   * 绘制星星
-   */
-  drawStar(ctx, cx, cy, outerRadius, points) {
-    const innerRadius = outerRadius / 2;
-    const angle = Math.PI / points;
-    
-    ctx.beginPath();
-    for (let i = 0; i < 2 * points; i++) {
-      const radius = i % 2 === 0 ? outerRadius : innerRadius;
-      const x = cx + Math.cos(i * angle - Math.PI / 2) * radius;
-      const y = cy + Math.sin(i * angle - Math.PI / 2) * radius;
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    }
-    ctx.closePath();
-    ctx.fill();
-  },
-
-  /**
-   * 保存到相册
-   */
-  async handleSave() {
-    if (!this.data.hasGenerated) {
-      wx.showToast({
-        title: '请先生成证书',
-        icon: 'none'
-      });
-      return;
-    }
-
-    try {
-      await certificateService.saveCertificateToAlbum(this.data.tempFilePath);
-    } catch (err) {
-      console.error('保存失败:', err);
-    }
   }
 });

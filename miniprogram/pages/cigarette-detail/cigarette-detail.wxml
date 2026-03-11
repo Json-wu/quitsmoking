@@ -1,0 +1,62 @@
+<!--pages/cigarette-detail/cigarette-detail.wxml-->
+<view class="container">
+  <!-- Canvas画布区域 -->
+  <view class="canvas-wrapper">
+    <canvas 
+      type="2d" 
+      id="cigarette-canvas" 
+      class="cigarette-canvas"
+    ></canvas>
+  </view>
+
+  <!-- 操作按钮区域 -->
+  <view class="action-buttons">
+    <!-- 点火按钮：未点火时显示 -->
+    <button wx:if="{{!isLit}}" class=" action-btn" bindtap="handleLight">
+      <text class="btn-text">点火</text>
+    </button>
+
+    <!-- 吸一口按钮：已点火后始终显示 -->
+    <button wx:if="{{isLit}}" class="action-btn" bindtap="handlePuff">
+      <text class="btn-text">吸一口</text>
+    </button>
+
+    <!-- 抖灰按钮：已点火后始终显示 -->
+    <button wx:if="{{isLit}}" class="action-btn" bindtap="handleShake">
+      <text class="btn-text">抖灰</text>
+    </button>
+
+    <!-- 再来一根按钮：已吸完6口时显示 -->
+    <button wx:if="{{totalPuffs >= maxPuffs}}" class="action-btn" bindtap="handleNew">
+      <text class="btn-text">再来一根</text>
+    </button>
+      <!-- 送烟按钮：固定在底部，始终显示 -->
+    <button class="share-btn" open-type="share">
+      <text class="share-text">送烟</text>
+    </button>
+  </view>
+
+  <!-- 提示文字：在送烟按钮上方 -->
+  <view class="tip-text">
+    <text class="text-sm text-secondary">摇一摇手机可以点火或抖灰哦</text>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section card">
+    <view class="stats-title">今日统计</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{ puffCount }}</text>
+        <text class="stat-label">吸了几口</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{ shakeCount }}</text>
+        <text class="stat-label">抖了几次</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{ lightCount }}</text>
+        <text class="stat-label">抽了几根</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/cigarette/cigarette",
+    "pages/cigarette-detail/cigarette-detail",
     "pages/buddhist/buddhist",
     "pages/camp/camp",
     "pages/certificate/certificate",
