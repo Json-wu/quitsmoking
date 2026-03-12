@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: quitsmoking-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: quitsmoking
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - quitsmoking-network
+
+  server:
+    image: crpi-g5p50ww96ven4gi1.cn-shanghai.personal.cr.aliyuncs.com/futurekeycom/quitsmoking:latest
+    container_name: quitsmoking-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/quitsmoking
+      - JWT_SECRET=quitsmoking123456
+      - WECHAT_APPID=wx49a37fec239dbda6
+      - WECHAT_SECRET=0ecf589b5f3e45f8f442155e4bcf85ff
+    depends_on:
+      - mongodb
+    networks:
+      - quitsmoking-network
+    volumes:
+      - ./logs:/app/logs
+
+networks:
+  quitsmoking-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local

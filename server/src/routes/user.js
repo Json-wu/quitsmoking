@@ -3,7 +3,6 @@ const express = require('express');
 const { findOrCreateUser, ensureMonthlyMakeupQuota } = require('../services/userService');
 const { getLatestCheckin } = require('../services/checkinService');
 const Checkin = require('../models/Checkin');
-const Badge = require('../models/Badge');
 const { formatDateYYYYMMDD } = require('../utils/date');
 
 const router = express.Router();
@@ -25,10 +24,9 @@ router.get('/stats', async (req, res, next) => {
 
     let quitDays = 0;
     if (user.quitDate) {
-      quitDays = await Checkin.countDocuments({ openid, date: { $gte: user.quitDate } });
+      quitDays = await Checkin.countDocuments({ openid });
     }
 
-    const badgeCount = await Badge.countDocuments({ openid });
 
     res.json({
       success: true,
@@ -41,7 +39,6 @@ router.get('/stats', async (req, res, next) => {
       continuousCheckin,
       totalCheckin,
       hasCheckedToday,
-      badgeCount,
       makeUpCount: user.makeUpCount,
       cigaretteCount: 0,
       shareCount: 0

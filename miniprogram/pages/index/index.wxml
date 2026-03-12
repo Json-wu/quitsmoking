@@ -45,7 +45,7 @@
      <view class="function-item" bindtap="goToCertificate">
        <image class="icon-svg" src="/assets/icons/clendar.svg" mode="aspectFit"></image>
       <view class="date-info">
-        <text class="date-text">{{ todayDate }}</text>
+        <text class="date-text">{{ quitDate }}</text>
         <text class="date-label">荣誉证书</text>
       </view>
     </view>

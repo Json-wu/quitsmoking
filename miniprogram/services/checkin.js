@@ -1,6 +1,6 @@
 // services/checkin.js - 签到服务
 
-const { callFunction } = require('../utils/request.js');
+const api = require('../utils/api.js');
 
 class CheckinService {
   /**
@@ -9,7 +9,8 @@ class CheckinService {
    */
   async checkIn() {
     try {
-      const result = await callFunction('checkIn');
+      const app = getApp();
+      const result = await api.checkIn({ openid: app.globalData.openid });
       return result;
     } catch (err) {
       console.error('签到失败:', err);
@@ -27,8 +28,9 @@ class CheckinService {
       // 先播放激励视频广告
       // await this.showRewardedVideoAd();
       
-      const res = await callFunction('makeUpCheckIn', { date });
-      return res.result;
+      const app = getApp();
+      const res = await api.makeUpCheckIn({ openid: app.globalData.openid, date });
+      return res;
     } catch (err) {
       console.error('补签失败:', err);
       return {
@@ -46,9 +48,10 @@ class CheckinService {
    */
   async getCheckinRecords(year, month) {
     try {
-      const res = await callFunction('getCheckinRecords', { year, month });
-      console.log('获取签到记录:', res.result);
-      return res.result;  // 返回res.result而不是res
+      const app = getApp();
+      const res = await api.getCheckinRecords({ openid: app.globalData.openid, year, month });
+      console.log('获取签到记录:', res);
+      return res;  // 返回res.result而不是res
     } catch (err) {
       console.error('获取签到记录失败:', err);
       throw err;
@@ -61,7 +64,8 @@ class CheckinService {
    */
   async checkTodayCheckin() {
     try {
-      const result = await callFunction('checkTodayCheckin');
+      const app = getApp();
+      const result = await api.getUserStats({ openid: app.globalData.openid });
       return result;
     } catch (err) {
       console.error('检查签到状态失败:', err);
@@ -75,7 +79,8 @@ class CheckinService {
    */
   async getCheckinStats() {
     try {
-      const result = await callFunction('getCheckinStats');
+      const app = getApp();
+      const result = await api.getUserStats({ openid: app.globalData.openid });
       return result;
     } catch (err) {
       console.error('获取签到统计失败:', err);

@@ -131,35 +131,6 @@ stars.forEach(([x, y]) => {
 });
 ```
 
-## 使用流程
-
-### 1. 进入证书页面
-```javascript
-wx.navigateTo({
-  url: '/pages/certificate/certificate'
-});
-```
-
-### 2. 生成证书
-```javascript
-// 点击"生成证书"按钮
-handleGenerate() {
-  // 1. 绘制证书到Canvas
-  await this.drawCertificate();
-  
-  // 2. 转换为临时图片
-  const tempFilePath = await canvasToTempFilePath(this.canvas, {
-    destWidth: this.canvasWidth * 2,
-    destHeight: this.canvasHeight * 2,
-    fileType: 'png',
-    quality: 1
-  });
-  
-  // 3. 调用云函数记录
-  await certificateService.generateCertificate(quitDays);
-}
-```
-
 ### 3. 保存到相册
 ```javascript
 handleSave() {

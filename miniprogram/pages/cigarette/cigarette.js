@@ -99,7 +99,7 @@ Page({
     try {
       const result = await cigaretteService.getTodayStats();
       if (result.success) {
-        const todayStats = result.today || {};
+        const todayStats = result.stats || {};
         this.setData({
           puffCount: todayStats.puffCount || 0,
           shakeCount: todayStats.shakeCount || 0,

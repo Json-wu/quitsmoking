@@ -13,7 +13,7 @@ Page({
     continuousDays: app.globalData.currentStreak || 0,
     monthCheckin: 0,
     totalCheckin: app.globalData.totalCheckin || 0,
-    makeUpCount: 3,
+    makeUpCount: app.globalData.makeUpCount || 3,
     showMakeUpModal: false,
     selectedDate: '',
     quitDate: ''  // 戒烟开始日期
@@ -60,9 +60,14 @@ Page({
       );
 
       if (result.success) {
+        const makeUpCount = result.makeUpCount !== undefined ? result.makeUpCount : app.globalData.makeUpCount || 3;
+        
+        // 同步到全局数据
+        app.globalData.makeUpCount = makeUpCount;
+        
         this.setData({
           checkinRecords: result.records || [],
-          makeUpCount: result.makeUpCount || 0,
+          makeUpCount: makeUpCount,
         });
 
         // 第2步：标记签到日期
@@ -153,6 +158,7 @@ Page({
       
       return {
         ...day,
+        // 签到日期（包括补签）都显示"戒"字样
         isQuitDay: isAfterQuitDate && isBeforeToday && isChecked
       };
     });
@@ -227,11 +233,18 @@ Page({
   onDayClick(e) {
     const { date, checked } = e.currentTarget.dataset;
     
-    if (!date || checked) return;
+    if (!date || checked) {
+      return;
+    }
 
-    // 检查是否是当月日期
     const selectedDate = new Date(date);
     const today = new Date();
+    const nowYear = today.getFullYear();
+    const nowMonth = today.getMonth() + 1;
+    
+    console.log('点击日期:', date);
+    console.log('选中日期年月:', selectedDate.getFullYear(), selectedDate.getMonth() + 1);
+    console.log('当前年月:', nowYear, nowMonth);
     
     if (selectedDate > today) {
       wx.showToast({
@@ -241,8 +254,17 @@ Page({
       return;
     }
 
-    // 检查是否是本月
-    if (selectedDate.getMonth() + 1 !== this.data.currentMonth) {
+    // 检查是否为本月日期
+    const selectedYear = selectedDate.getFullYear();
+    const selectedMonth = selectedDate.getMonth() + 1;
+    
+    if (selectedYear !== nowYear || selectedMonth !== nowMonth) {
+      console.log('非本月日期，不能补签');
+      wx.showToast({
+        title: '只可补签本月',
+        icon: 'none',
+        duration: 2000
+      });
       return;
     }
 
@@ -269,22 +291,30 @@ Page({
       wx.showLoading({ title: '补签中...' });
 
       const result = await checkinService.makeUpCheckIn(this.data.selectedDate);
-console.log('confirmMakeUp:', result);
+
       if (result.success) {
+        // 更新全局数据
+        if (result.continuousDays !== undefined) {
+          app.globalData.currentStreak = result.continuousDays;
+        }
+        if (result.totalDays !== undefined) {
+          app.globalData.totalCheckin = result.totalDays;
+        }
+        if (result.makeUpCount !== undefined) {
+          app.globalData.makeUpCount = result.makeUpCount;
+        }
+
         wx.showToast({
           title: '补签成功',
           icon: 'success'
         });
+
         this.setData({
-          continuousDays: result.continuousDays,
-          totalCheckin: result.totalDays
+          showMakeUpModal: false
         });
 
-        app.globalData.currentStreak = result.continuousDays;
-        app.globalData.totalCheckin = result.totalDays;
-
-        // 刷新数据
-        await this.loadData(true);
+        // 重新加载数据
+        this.loadData();
       } else {
         wx.showToast({
           title: result.message || '补签失败',
@@ -294,12 +324,11 @@ console.log('confirmMakeUp:', result);
     } catch (err) {
       console.error('补签失败:', err);
       wx.showToast({
-        title: err.message || '补签失败',
+        title: '补签失败',
         icon: 'none'
       });
     } finally {
       wx.hideLoading();
-      this.closeMakeUpModal();
     }
   },
 

@@ -1,6 +1,6 @@
 // services/user.js - 用户服务
 
-const { callFunction } = require('../utils/request.js');
+const api = require('../utils/api.js');
 
 class UserService {
   /**
@@ -9,8 +9,9 @@ class UserService {
    */
   async getUserInfo() {
     try {
-      const res = await callFunction('getUserStats');
-      return res.result;
+      const app = getApp();
+      const res = await api.getUserStats({ openid: app.globalData.openid });
+      return res;
     } catch (err) {
       console.error('获取用户信息失败:', err);
       throw err;
@@ -24,8 +25,9 @@ class UserService {
    */
   async updateUserInfo(data) {
     try {
-      const res = await callFunction('updateUserInfo', data);
-      return res.result;
+      const app = getApp();
+      const res = await api.updateUserInfo({ openid: app.globalData.openid, ...data });
+      return res;
     } catch (err) {
       console.error('更新用户信息失败:', err);
       throw err;
@@ -39,8 +41,9 @@ class UserService {
    */
   async setQuitDate(quitDate) {
     try {
-      const res = await callFunction('setQuitDate', { quitDate });
-      return res.result;
+      const app = getApp();
+      const res = await api.setQuitDate({ openid: app.globalData.openid, quitDate });
+      return res;
     } catch (err) {
       console.error('设置戒烟日期失败:', err);
       throw err;
@@ -53,8 +56,9 @@ class UserService {
    */
   async getUserStats() {
     try {
-      const res = await callFunction('getUserStats');
-      return res.result;
+      const app = getApp();
+      const res = await api.getUserStats({ openid: app.globalData.openid });
+      return res;
     } catch (err) {
       console.error('获取统计数据失败:', err);
       throw err;
@@ -68,8 +72,9 @@ class UserService {
    */
   async updateSettings(settings) {
     try {
-      const res = await callFunction('updateUserInfo', { settings });
-      return res.result;
+      const app = getApp();
+      const res = await api.updateUserInfo({ openid: app.globalData.openid, settings });
+      return res;
     } catch (err) {
       console.error('更新设置失败:', err);
       throw err;
@@ -82,8 +87,8 @@ class UserService {
    */
   async getBadges() {
     try {
-      const res = await callFunction('getBadges');
-      return res.result;
+      // 勋章功能已移除
+      return { success: false, message: '勋章功能已移除' };
     } catch (err) {
       console.error('获取勋章列表失败:', err);
       throw err;

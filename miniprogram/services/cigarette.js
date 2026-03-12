@@ -1,6 +1,6 @@
 // services/cigarette.js - 电子烟服务
 
-const { callFunction } = require('../utils/request.js');
+const api = require('../utils/api.js');
 
 class CigaretteService {
   /**
@@ -11,8 +11,9 @@ class CigaretteService {
    */
   async recordPuff(type, count = 1) {
     try {
-      const result = await callFunction('recordPuff', { type, count });
-      return result.result;
+      const app = getApp();
+      const result = await api.recordPuff({ openid: app.globalData.openid, type, count });
+      return result;
     } catch (err) {
       console.error('记录吸烟行为失败:', err);
       throw err;
@@ -57,8 +58,9 @@ class CigaretteService {
    */
   async getTodayStats() {
     try {
-      const result = await callFunction('getCigaretteStats');
-      return result.result;
+      const app = getApp();
+      const result = await api.getCigaretteStats({ openid: app.globalData.openid });
+      return result;
     } catch (err) {
       console.error('获取统计数据失败:', err);
       throw err;
@@ -85,7 +87,9 @@ class CigaretteService {
   async recordShare() {
     try {
       console.log('记录分享');
-      const result = await callFunction('recordShare', {
+      const app = getApp();
+      const result = await api.recordShare({
+        openid: app.globalData.openid,
         shareType: 'cigarette'
       });
       console.log('记录分享结果:', result);

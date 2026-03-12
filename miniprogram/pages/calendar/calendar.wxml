@@ -58,7 +58,7 @@
           <text class="makeup-icon">+</text>
         </view>
         <!-- 戒烟日期标记 -->
-        <view class="day-quit" wx:if="{{ item.isQuitDay && item.isCurrentMonth }}">
+        <view class="day-quit" wx:if="{{ item.isChecked && item.isCurrentMonth }}">
           <text class="quit-icon">戒</text>
         </view>
       </view>

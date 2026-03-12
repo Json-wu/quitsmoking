@@ -1,6 +1,4 @@
 // app.js
-const dbInit = require('./utils/dbInit');
-
 App({
   /**
    * 全局数据
@@ -14,9 +12,7 @@ App({
     totalCheckin: 0,             // 累计签到天数
     hasCheckedToday: false,      // 今日是否已签到
     makeUpCount: 3,              // 剩余补签次数
-    isLogin: false,              // 登录状态
-    cloudEnvId: 'cloud1-5g9hlytr7a58a6f7',    // 云开发环境ID
-    dbInitialized: true         // 数据库是否已初始化
+    isLogin: false               // 登录状态
   },
 
   /**
@@ -24,12 +20,6 @@ App({
    */
   onLaunch() {
     console.log('小程序启动');
-    
-    // 初始化云开发
-    this.initCloud();
-    
-    // 检查数据库
-    this.checkDatabase();
     
     // 检查登录状态
     this.checkLogin();
@@ -54,114 +44,37 @@ App({
   },
 
   /**
-   * 初始化云开发
-   */
-  initCloud() {
-    if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力');
-      wx.showModal({
-        title: '提示',
-        content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。',
-        showCancel: false
-      });
-      return;
-    }
-
-    wx.cloud.init({
-      env: this.globalData.cloudEnvId,
-      traceUser: true
-    });
-
-    console.log('云开发初始化成功');
-  },
-
-  /**
-   * 检查数据库集合
-   */
-  async checkDatabase() {
-    try {
-      console.log('开始检查数据库集合...');
-      
-      // 检查数据库集合是否存在（不显示弹窗）
-      const isInitialized = await dbInit.initDBCheck(false);
-      this.globalData.dbInitialized = isInitialized;
-      
-      if (!isInitialized) {
-        console.warn('数据库未完全初始化，尝试自动初始化...');
-        
-        // 尝试调用云函数自动初始化数据库
-        try {
-          const res = await wx.cloud.callFunction({
-            name: 'initDB'
-          });
-          
-          console.log('数据库初始化结果:', res);
-          
-          if (res.errMsg === 'cloud.callFunction:ok' && res.result?.success) {
-            this.globalData.dbInitialized = true;
-            console.log('✓ 数据库自动初始化成功');
-            
-            wx.showToast({
-              title: '数据库初始化成功',
-              icon: 'success'
-            });
-          } else {
-            console.error('数据库初始化失败:', res.result);
-            this.showDBInitError();
-          }
-        } catch (err) {
-          console.error('调用数据库初始化云函数失败:', err);
-          this.showDBInitError();
-        }
-      } else {
-        console.log('✓ 数据库检查通过');
-      }
-    } catch (err) {
-      console.error('数据库检查异常:', err);
-    }
-  },
-
-  /**
-   * 显示数据库初始化错误
-   */
-  showDBInitError() {
-    wx.showModal({
-      title: '数据库未初始化',
-      content: '数据库集合未创建或初始化失败。\n\n请联系管理员在云开发控制台创建必需的数据库集合，或部署并运行 initDB 云函数。',
-      showCancel: false,
-      confirmText: '我知道了'
-    });
-  },
-
-  /**
    * 检查登录状态
    */
   async checkLogin() {
+    const api = require('./utils/api.js');
+    
     try {
-      // 调用云函数登录
-      const res = await wx.cloud.callFunction({
-        name: 'login'
-      });
-
-      console.log('login云函数返回:', res);
-
-      if (!res.result) {
-        console.error('登录失败: 云函数返回结果为空，请检查云函数是否已部署');
-        this.showLoginError();
+      // 先获取openid
+      await this.getOpenIdForApi();
+      if (!this.globalData.openid) {
+        console.error('获取openid失败');
+        wx.showToast({
+          title: '登录失败，请重试',
+          icon: 'none'
+        });
         return;
       }
 
-      const { result } = res;
+      // 调用API登录
+      const res = await api.login({ openid: this.globalData.openid });
 
-      if (res.errMsg === 'cloud.callFunction:ok') {
-        this.globalData.openid = result.openid;
+      console.log('login返回:', res);
+
+      if (res && res.success) {
+        this.globalData.openid = res.openid;
         this.globalData.isLogin = true;
-        console.log('登录成功, openid:', result.openid);
+        console.log('✓ 登录成功, openid:', res.openid);
         
         // 加载用户数据
         await this.loadUserData();
       } else {
-        console.error('登录失败:', result.message || '未知错误');
+        console.error('登录失败:', res);
         this.showLoginError();
       }
     } catch (err) {
@@ -174,37 +87,29 @@ App({
    * 加载用户数据
    */
   async loadUserData(showLoading = true) {
+    const api = require('./utils/api.js');
     try {
       if (showLoading) {
         wx.showLoading({ title: '加载中...' });
       }
 
-      const res = await wx.cloud.callFunction({
-        name: 'getUserStats'
-      });
+      const res = await api.getUserStats({ openid: this.globalData.openid });
 
-      console.log('getUserStats云函数返回:', res);
+      console.log('getUserStats返回:', res);
 
-      if (!res.result) {
-        console.error('加载用户数据失败: 云函数返回结果为空，请检查云函数是否已部署');
-        return;
-      }
-
-      const { result } = res;
-
-      if (result.success) {
+      if (res && res.success) {
         // 更新全局数据
-        this.globalData.userInfo = result.userInfo;
-        this.globalData.quitDate = result.quitDate;
-        this.globalData.quitDays = result.quitDays;
-        this.globalData.currentStreak = result.continuousCheckin;
-        this.globalData.totalCheckin = result.totalCheckin;
-        this.globalData.hasCheckedToday = result.hasCheckedToday;
-        this.globalData.makeUpCount = result.makeUpCount;
+        this.globalData.userInfo = res.userInfo;
+        this.globalData.quitDate = res.quitDate;
+        this.globalData.quitDays = res.quitDays;
+        this.globalData.currentStreak = res.continuousCheckin;
+        this.globalData.totalCheckin = res.totalCheckin;
+        this.globalData.hasCheckedToday = res.hasCheckedToday;
+        this.globalData.makeUpCount = res.makeUpCount;
 
         console.log('用户数据加载成功');
       } else {
-        console.error('加载用户数据失败:', result.message || '未知错误');
+        console.error('加载用户数据失败:', res?.message || '未知错误');
       }
     } catch (err) {
       console.error('加载用户数据异常:', err);
@@ -307,30 +212,6 @@ App({
   },
 
   /**
-   * 刷新签到状态
-   */
-  async refreshCheckinStatus() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'getUserStats'
-      });
-
-      console.log('refreshCheckinStatus云函数返回:', res);
-
-      if (res.errMsg === 'cloud.callFunction:ok' && res.result) {
-        const result = res.result;
-        this.globalData.hasCheckedToday = result.hasCheckedToday;
-        this.globalData.currentStreak = result.continuousCheckin;
-        this.globalData.totalCheckin = result.totalCheckin;
-        return result.hasCheckedToday;
-      }
-    } catch (err) {
-      console.error('刷新签到状态失败:', err);
-    }
-    return false;
-  },
-
-  /**
    * 播放激励视频广告
    * @returns {Promise} 广告播放结果
    */
@@ -362,6 +243,62 @@ App({
             console.error('广告加载失败', err);
             reject(err);
           });
+      });
+    });
+  },
+
+  /**
+   * API模式下获取openid
+   */
+  async getOpenIdForApi() {
+    return new Promise((resolve, reject) => {
+      wx.login({
+        success: async (res) => {
+          if (res.code) {
+            console.log('wx.login成功，code:', res.code);
+            try {
+              // 调用后端接口换取openid
+              const { getApiUrl } = require('./config/api.config.js');
+              const url = getApiUrl('/auth/wxlogin');
+              
+              const result = await new Promise((resolve, reject) => {
+                wx.request({
+                  url,
+                  method: 'POST',
+                  data: { code: res.code },
+                  header: { 'content-type': 'application/json' },
+                  success: (res) => {
+                    if (res.statusCode === 200 && res.data.success) {
+                      resolve(res.data);
+                    } else {
+                      reject(res.data || { message: '登录失败' });
+                    }
+                  },
+                  fail: reject
+                });
+              });
+
+              if (result.openid) {
+                this.globalData.openid = result.openid;
+                console.log('✓ 获取openid成功:', result.openid);
+                resolve(result.openid);
+              } else {
+                console.error('后端未返回openid');
+                reject(new Error('未获取到openid'));
+              }
+            } catch (err) {
+              console.error('换取openid失败:', err);
+              reject(err);
+            }
+          } else {
+            console.error('wx.login失败，未获取到code');
+            reject(new Error('未获取到code'));
+          }
+        },
+        fail: (err) => {
+          console.error('wx.login调用失败:', err);
+          reject(err);
+        }
       });
     });
   },

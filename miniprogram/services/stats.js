@@ -1,6 +1,6 @@
 // services/stats.js - 统计服务
 
-const { callFunction } = require('../utils/request.js');
+const api = require('../utils/api.js');
 
 class StatsService {
   /**
@@ -36,20 +36,6 @@ class StatsService {
       nicotineReduced,
       lifeExtended
     };
-  }
-
-  /**
-   * 获取用户完整统计数据
-   * @returns {Promise} 统计数据
-   */
-  async getUserCompleteStats() {
-    try {
-      const result = await callFunction('getUserCompleteStats');
-      return result;
-    } catch (err) {
-      console.error('获取统计数据失败:', err);
-      throw err;
-    }
   }
 
   /**

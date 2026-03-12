@@ -16,14 +16,13 @@ Page({
     savedMoney: '0.00',       // 节省金额
     savedCigarettes: 0,       // 节省香烟数
     healthIndex: 0,           // 健康指数
-    recommendArticles: [],    // 推荐文章
     showDatePicker: false,    // 显示日期选择器
     today: '',                // 今天日期
     todayDate: '',            // 今日日期显示（格式：2026-02-09）
     userInfo: null,           // 用户信息
     recentDays: [],           // 最近7天签到记录
     cigaretteProgress: 0,     // 电子烟进度
-    todayCheckinCount: 9848,  // 今日签到人数
+    todayCheckinCount: 10,  // 今日签到人数
     categories: {
       'scientific': '科学戒烟',
       'psychology': '心理调节',
@@ -149,17 +148,6 @@ Page({
       // 从全局数据获取
       const globalData = app.globalData;
 
-      console.log('当前戒烟日期:', globalData.quitDate);
-
-      // 如果没有设置戒烟日期，显示设置弹窗
-      // 注意：现在默认会在注册时设置为当前日期，所以这个判断基本不会触发
-      if (!globalData.quitDate) {
-        console.log('未设置戒烟日期，显示设置弹窗');
-        this.setData({ showDatePicker: true });
-        wx.hideLoading();
-        return;
-      }
-
       // 使用全局数据中的戒烟天数（由云函数基于戒烟开始日期计算）
       const quitDays = globalData.quitDays || 0;
 
@@ -169,10 +157,10 @@ Page({
       // 更新页面数据
       this.setData({
         quitDays: quitDays,
-        quitDate: globalData.quitDate,
-        currentStreak: globalData.currentStreak,
-        totalCheckin: globalData.totalCheckin,
-        hasCheckedToday: globalData.hasCheckedToday,
+        quitDate: globalData.quitDate || app.formatDate(new Date(), 'YYYY-MM-DD'),
+        currentStreak: globalData.currentStreak || 0,
+        totalCheckin: globalData.totalCheckin || 0,
+        hasCheckedToday: globalData.hasCheckedToday || false,
         userInfo: globalData.userInfo,
         cigaretteProgress: Math.min(100, (globalData.cigaretteCount || 0) * 10),
         ...healthStats
@@ -180,9 +168,6 @@ Page({
 
       // 更新最近签到记录
       this.updateRecentDays();
-
-      // 加载推荐文章
-      // await this.loadRecommendArticles();
 
       // 获取今日签到人数
       this.getTodayCheckinCount();
@@ -247,31 +232,6 @@ Page({
     };
   },
 
-  /**
-   * 加载推荐文章
-   */
-  async loadRecommendArticles() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'getArticles',
-        data: {
-          category: 'all',
-          page: 1,
-          pageSize: 3
-        }
-      });
-
-      console.log('getArticles云函数返回:', res);
-
-      if (res.errMsg === 'cloud.callFunction:ok' && res.result) {
-        this.setData({
-          recommendArticles: res.result.articles || []
-        });
-      }
-    } catch (err) {
-      console.error('加载推荐文章失败:', err);
-    }
-  },
 
   /**
    * 处理签到
@@ -285,17 +245,13 @@ Page({
       return;
     }
 
+    const api = require('../../utils/api.js');
     try {
       wx.showLoading({ title: '签到中...' });
 
-      const res = await wx.cloud.callFunction({
-        name: 'checkIn'
-      });
+      const result = await api.checkIn({ openid: app.globalData.openid });
 
-      console.log('checkIn云函数返回:', res);
-
-      if (res.errMsg === 'cloud.callFunction:ok' && res.result) {
-        const result = res.result;
+      if (result.success) {
 
         // 签到成功，更新签到相关数据
         this.setData({
@@ -309,19 +265,14 @@ Page({
         app.globalData.currentStreak = result.continuousDays;
         app.globalData.totalCheckin = result.totalDays;
 
-        // 戒烟天数基于戒烟开始日期计算，不受签到影响
-        // 无需更新 quitDays 和健康收益数据
+        // 刷新首页数据
+        await this.refreshData();
 
         // 显示签到成功动画
         this.showCheckinSuccess(result);
-
-        // 检查是否有新勋章
-        if (result.newBadges && result.newBadges.length > 0) {
-          this.showNewBadges(result.newBadges);
-        }
       } else {
         wx.showToast({
-          title: res.result?.message || '签到失败',
+          title: result?.message || '签到失败',
           icon: 'none'
         });
       }
@@ -341,7 +292,7 @@ Page({
    */
   showCheckinSuccess(result) {
     wx.showToast({
-      title: `签到成功！连续${result.continuousDays}天`,
+      title: `签到成功！`,
       icon: 'success',
       duration: 2000
     });
@@ -360,77 +311,6 @@ Page({
       showCancel: false,
       confirmText: '太棒了'
     });
-  },
-
-  /**
-   * 日期选择改变
-   */
-  onDateChange(e) {
-    this.setData({
-      quitDate: e.detail.value
-    });
-  },
-
-  /**
-   * 确认戒烟日期
-   */
-  async confirmQuitDate() {
-    const { quitDate } = this.data;
-
-    if (!quitDate) {
-      wx.showToast({
-        title: '请选择日期',
-        icon: 'none'
-      });
-      return;
-    }
-
-    try {
-      wx.showLoading({ title: '保存中...' });
-
-      const result = await wx.cloud.callFunction({
-        name: 'setQuitDate',
-        data: { quitDate }
-      });
-
-      console.log('setQuitDate云函数返回:', result);
-
-      if (result.errMsg === 'cloud.callFunction:ok') {
-        // 更新全局数据
-        app.globalData.quitDate = quitDate;
-
-        // 关闭弹窗
-        this.setData({ showDatePicker: false });
-
-        // 重新加载数据
-        await this.loadData();
-
-        wx.showToast({
-          title: '设置成功',
-          icon: 'success'
-        });
-      } else {
-        wx.showToast({
-          title: result.message || '设置失败',
-          icon: 'none'
-        });
-      }
-    } catch (err) {
-      console.error('设置戒烟日期失败:', err);
-      wx.showToast({
-        title: '设置失败，请重试',
-        icon: 'none'
-      });
-    } finally {
-      wx.hideLoading();
-    }
-  },
-
-  /**
-   * 关闭日期选择器
-   */
-  closeDatePicker() {
-    this.setData({ showDatePicker: false });
   },
 
   /**
@@ -505,25 +385,6 @@ Page({
   },
 
   /**
-   * 跳转到戒烟方法
-   */
-  goToMethods() {
-    wx.navigateTo({
-      url: '/pages/methods/methods'
-    });
-  },
-
-  /**
-   * 跳转到文章详情
-   */
-  goToArticle(e) {
-    const { id } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/article/article?id=${id}`
-    });
-  },
-
-  /**
    * 初始化最近7天数据
    */
   initRecentDays() {
@@ -582,14 +443,6 @@ Page({
     });
   },
 
-  /**
-   * 跳转到设置
-   */
-  goToSettings() {
-    wx.navigateTo({
-      url: '/pages/settings/settings'
-    });
-  },
 
   /**
    * 跳转到数据统计
@@ -719,15 +572,13 @@ Page({
    * 获取今日签到人数
    */
   async getTodayCheckinCount() {
+    const api = require('../../utils/api.js');
     try {
-      const result = await wx.cloud.callFunction({
-        name: 'getTodayCheckinCount'
-      });
-      console.log('getTodayCheckinCount云函数返回:', result);
+      const result = await api.getTodayCheckinCount();
 
-      if (result.result && result.result.success) {
+      if (result && result.success) {
         // 获取云函数返回的签到人数并+10
-        const count = (result.result.count || 0) + 10;
+        const count = (result.count || 0) + 10;
         this.setData({
           todayCheckinCount: count
         });
@@ -735,6 +586,9 @@ Page({
     } catch (err) {
       console.error('获取今日签到人数失败:', err);
       // 失败时保持默认值
+       this.setData({
+          todayCheckinCount: 9
+        });
     }
   }
 });

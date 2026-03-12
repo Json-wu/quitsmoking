@@ -134,9 +134,6 @@ Page({
         loading: false
       });
 
-      // 调用云函数记录
-      await certificateService.generateCertificate(this.data.quitDays);
-
     } catch (err) {
       console.error('生成证书失败:', err);
       this.setData({ loading: false });
@@ -146,55 +143,6 @@ Page({
       });
     } finally {
       this.setData({ generating: false });
-    }
-  },
-
-  /**
-   * 生成证书（保留用于手动重新生成）
-   */
-  async handleGenerate() {
-    if (this.data.generating) return;
-
-    try {
-      this.setData({ generating: true });
-      wx.showLoading({ title: '生成中...' });
-
-      // 绘制证书
-      await this.drawCertificate();
-
-      // 转换为图片
-      const tempFilePath = await canvasToTempFilePath(this.canvas, {
-        x: 0,
-        y: 0,
-        width: this.canvasWidth,
-        height: this.canvasHeight,
-        destWidth: this.canvasWidth * 2,
-        destHeight: this.canvasHeight * 2,
-        fileType: 'png',
-        quality: 1
-      });
-
-      this.setData({
-        hasGenerated: true,
-        tempFilePath
-      });
-
-      // 调用云函数记录
-      await certificateService.generateCertificate(this.data.quitDays);
-
-      wx.showToast({
-        title: '生成成功',
-        icon: 'success'
-      });
-    } catch (err) {
-      console.error('生成证书失败:', err);
-      wx.showToast({
-        title: '生成失败',
-        icon: 'none'
-      });
-    } finally {
-      this.setData({ generating: false });
-      wx.hideLoading();
     }
   },
 
@@ -342,19 +290,6 @@ Page({
   async drawBorderImage(ctx, imageUrl, width, height) {
     try {
       let tempUrl = imageUrl;
-      
-      // 如果是云存储地址，先转换为临时链接
-      if (imageUrl.startsWith('cloud://')) {
-        const res = await wx.cloud.getTempFileURL({
-          fileList: [imageUrl]
-        });
-        
-        if (res.fileList && res.fileList.length > 0 && res.fileList[0].tempFileURL) {
-          tempUrl = res.fileList[0].tempFileURL;
-        } else {
-          throw new Error('获取临时链接失败');
-        }
-      }
       
       // 加载边框图片
       const img = this.canvas.createImage();
