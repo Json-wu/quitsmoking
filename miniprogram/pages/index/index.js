@@ -75,7 +75,7 @@ Page({
    */
   onShareAppMessage() {
     return {
-      title: `我已成功戒烟${this.data.quitDays}天，你也可以！`,
+      title: `我已戒烟${this.data.quitDays}天，快来试试吧！`,
       path: '/pages/index/index',
       imageUrl: '/assets/images/share-bg.png'
     };
@@ -137,8 +137,6 @@ Page({
    */
   async loadData() {
     try {
-      wx.showLoading({ title: '加载中...' });
-
       // 确保用户数据已加载
       if (!app.globalData.userInfo) {
         console.log('用户数据未加载，等待加载...');
@@ -178,8 +176,6 @@ Page({
         title: '加载失败',
         icon: 'none'
       });
-    } finally {
-      wx.hideLoading();
     }
   },
 

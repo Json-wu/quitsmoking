@@ -34,7 +34,7 @@ Page({
     }
     
     return {
-      title: `我已成功戒烟${this.data.quitDays}天！`,
+      title: `分享我的荣誉证书！`,
       path: '/pages/index/index',
       imageUrl: this.data.tempFilePath || ''
     };

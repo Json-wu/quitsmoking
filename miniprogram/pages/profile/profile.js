@@ -48,7 +48,7 @@ Page({
   onShareAppMessage() {
     const { quitDays, savedCigarettes, savedMoney } = this.data;
     return {
-      title: `我已戒烟${quitDays}天，少抽${savedCigarettes}根烟，节省${savedMoney}元！一起加入戒烟吧！`,
+      title: `分享我的一份戒烟经历！`,
       path: '/pages/index/index',
       imageUrl: '/assets/images/share-cover.jpg'
     };
@@ -59,8 +59,6 @@ Page({
    */
   async loadUserData() {
     try {
-      wx.showLoading({ title: '加载中...' });
-
       // 获取全局用户信息
       const globalData = app.globalData;
 
@@ -111,8 +109,6 @@ Page({
         title: '加载失败',
         icon: 'none'
       });
-    } finally {
-      wx.hideLoading();
     }
   },
 

@@ -45,8 +45,6 @@ Page({
    */
   async loadData(isFresh) {
     try {
-      wx.showLoading({ title: '加载中...' });
-
       if (!isFresh) {
         this.setData({
            continuousDays: app.globalData.currentStreak,
@@ -84,8 +82,6 @@ Page({
         title: '加载失败',
         icon: 'none'
       });
-    } finally {
-      wx.hideLoading();
     }
   },
 

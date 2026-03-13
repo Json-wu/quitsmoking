@@ -86,13 +86,9 @@ App({
   /**
    * 加载用户数据
    */
-  async loadUserData(showLoading = true) {
+  async loadUserData() {
     const api = require('./utils/api.js');
     try {
-      if (showLoading) {
-        wx.showLoading({ title: '加载中...' });
-      }
-
       const res = await api.getUserStats({ openid: this.globalData.openid });
 
       console.log('getUserStats返回:', res);
@@ -113,11 +109,7 @@ App({
       }
     } catch (err) {
       console.error('加载用户数据异常:', err);
-    } finally {
-      if (showLoading) {
-        wx.hideLoading();
-      }
-    }
+    } 
   },
 
   /**
@@ -339,22 +331,4 @@ App({
       duration: 2000
     });
   },
-
-  /**
-   * 显示加载中
-   * @param {String} title - 提示文字
-   */
-  showLoading(title = '加载中...') {
-    wx.showLoading({
-      title,
-      mask: true
-    });
-  },
-
-  /**
-   * 隐藏加载
-   */
-  hideLoading() {
-    wx.hideLoading();
-  }
 });

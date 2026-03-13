@@ -7,7 +7,7 @@ class CertificateService {
    */
   shareCertificate(days, level) {
     return {
-      title: `我已成功戒烟${days}天！`,
+      title: `分享我的荣誉证书！`,
       path: '/pages/index/index',
       imageUrl: '/assets/images/share-certificate.png'
     };
