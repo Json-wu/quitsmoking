@@ -43,6 +43,16 @@ Page({
   onShareAppMessage() {
     return cigaretteService.shareCigarette();
   },
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: '送你一支电子烟，帮你戒烟解压！',
+      path: '/pages/cigarette/cigarette',
+      imageUrl: '/assets/images/share-cigarette.jpeg'
+    };
+  },
 
   /**
    * 初始化Canvas

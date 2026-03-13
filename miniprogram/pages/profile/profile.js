@@ -50,7 +50,14 @@ Page({
     return {
       title: `分享我的一份戒烟经历！`,
       path: '/pages/index/index',
-      imageUrl: '/assets/images/share-cover.jpg'
+    };
+  },
+
+  onShareTimeline() {
+    const { quitDays, savedCigarettes, savedMoney } = this.data;
+    return {
+      title: `我的戒烟经历：${quitDays}天，少抽${savedCigarettes}支烟，节省${savedMoney}元`,
+      imageUrl: '/assets/images/logo.jpg'
     };
   },
 

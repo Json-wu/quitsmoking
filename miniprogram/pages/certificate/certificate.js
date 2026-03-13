@@ -41,6 +41,21 @@ Page({
   },
 
   /**
+   * 分享到朋友圈
+   */
+  async onShareTimeline() {
+    // 确保使用当前选中的模板生成最新的证书
+    if (!this.data.hasGenerated || !this.data.tempFilePath) {
+      await this.autoGenerateCertificate();
+    }
+    
+    return {
+      title: `我的戒烟${this.data.quitDays}天荣誉证书`,
+      imageUrl: this.data.tempFilePath || ''
+    };
+  },
+
+  /**
    * 初始化数据
    */
   initData() {

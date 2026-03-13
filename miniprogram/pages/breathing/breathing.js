@@ -221,5 +221,15 @@ Page({
       path: '/pages/breathing/breathing',
       imageUrl: this.data.shareImageUrl || '/assets/images/fb.png'
     };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: '每日呼吸训练，健康生活从现在开始',
+      imageUrl: this.data.shareImageUrl || '/assets/images/fb.png'
+    };
   }
 });

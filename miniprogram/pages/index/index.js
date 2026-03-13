@@ -71,13 +71,22 @@ Page({
   },
 
   /**
-   * 用户点击右上角分享
+   * 分享好友
    */
   onShareAppMessage() {
     return {
-      title: `我已戒烟${this.data.quitDays}天，快来试试吧！`,
+      title: `我已成功戒烟${this.data.quitDays}天，你也可以！`,
       path: '/pages/index/index',
-      imageUrl: '/assets/images/share-bg.png'
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    return {
+      title: `我已成功戒烟${this.data.quitDays}天，你也可以！`,
+      imageUrl: '/assets/images/logo.jpg'
     };
   },
 

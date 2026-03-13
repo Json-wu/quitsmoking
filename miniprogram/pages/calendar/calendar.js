@@ -343,5 +343,27 @@ Page({
    */
   stopPropagation() {
     // 阻止事件冒泡
+  },
+
+  /**
+   * 分享给好友
+   */
+  onShareAppMessage() {
+    const app = getApp();
+    return {
+      title: `我已连续签到${app.globalData.currentStreak}天，一起戒烟吧！`,
+      path: '/pages/index/index',
+    };
+  },
+
+  /**
+   * 分享到朋友圈
+   */
+  onShareTimeline() {
+    const app = getApp();
+    return {
+      title: `坚持戒烟打卡${app.globalData.currentStreak}天，累计签到${app.globalData.totalCheckin}天`,
+      imageUrl: '/assets/images/logo.jpg'
+    };
   }
 });
