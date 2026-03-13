@@ -103,7 +103,7 @@ Page({
   // 分享
   onShareAppMessage() {
     return {
-      title: '一起来戒烟 - 佛性戒烟',
+      title: '原来听音乐也可以戒烟！',
       path: '/pages/buddhist/buddhist',
       imageUrl: ''
     };
@@ -111,7 +111,7 @@ Page({
 
   onShareTimeline() {
     return {
-      title: '一起来戒烟 - 佛性戒烟',
+      title: '原来听音乐也可以戒烟！',
       query: '',
       imageUrl: ''
     };

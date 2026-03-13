@@ -91,8 +91,8 @@ Page({
         y: 0,
         width: this.canvasWidth,
         height: this.canvasHeight,
-        destWidth: this.canvasWidth * 2,
-        destHeight: this.canvasHeight * 2,
+        destWidth: 500,
+        destHeight: 400,
         fileType: 'png',
         quality: 1
       });
@@ -116,14 +116,14 @@ Page({
       // 绘制证书
       await this.drawCertificate();
 
-      // 转换为图片
+      // 转换为图片，使用微信分享推荐尺寸 500x400 (5:4)
       const tempFilePath = await canvasToTempFilePath(this.canvas, {
         x: 0,
         y: 0,
         width: this.canvasWidth,
         height: this.canvasHeight,
-        destWidth: this.canvasWidth * 2,
-        destHeight: this.canvasHeight * 2,
+        destWidth: 500,
+        destHeight: 400,
         fileType: 'png',
         quality: 1
       });
@@ -225,25 +225,25 @@ Page({
     ctx.font = 'bold 14px sans-serif';
     ctx.fillStyle = '#000000';
     ctx.textAlign = 'left';
-    ctx.fillText('尊敬的戒烟达人：', contentX + 10, contentY + 70);
+    ctx.fillText('尊敬的戒烟达人：', contentX + 10, contentY + 105);
 
     // 绘制正文内容
     ctx.font = '12px sans-serif';
     ctx.fillStyle = '#000000';
     ctx.textAlign = 'center';
     const contentText = `${quitStartDate} 开始戒烟，已戒 ${quitDays} 天！`;
-    ctx.fillText(contentText, width / 2, contentY + 100);
+    ctx.fillText(contentText, width / 2, contentY + 140);
 
     // 绘制鼓励语
     ctx.font = 'bold 16px sans-serif';
     ctx.fillStyle = '#000000';
     const encouragement = '重点鼓励';
-    ctx.fillText(encouragement, width / 2, contentY + 130);
+    ctx.fillText(encouragement, width / 2, contentY + 190);
 
     // 绘制签名
     ctx.font = '14px sans-serif';
     ctx.fillStyle = '#d01a1a';
-    ctx.fillText('我要戒烟', width - contentX - 40, height - contentY + 5);
+    ctx.fillText('我要戒烟', width - contentX - 40, height - contentY - 5);
 
     // 清除阴影效果
     ctx.shadowColor = 'transparent';

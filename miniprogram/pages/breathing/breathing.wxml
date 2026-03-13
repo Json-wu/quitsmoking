@@ -31,4 +31,11 @@
       </button>
     </view>
   </view>
+  
+  <!-- 用于生成分享图片的Canvas（隐藏） -->
+  <canvas 
+    type="2d" 
+    id="share-canvas" 
+    style="position: fixed; left: -9999px; width: 500px; height: 400px;"
+  ></canvas>
 </view>
