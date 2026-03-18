@@ -95,7 +95,12 @@ App({
 
       if (res && res.success) {
         // 更新全局数据
-        this.globalData.userInfo = res.userInfo;
+        this.globalData.userInfo = {
+          ...res.userInfo,
+          dailyCigarettes: res.dailyCigarettes,
+          cigarettePrice: res.cigarettePrice,
+          cigarettesPerPack: res.cigarettesPerPack
+        };
         this.globalData.quitDate = res.quitDate;
         this.globalData.quitDays = res.quitDays;
         this.globalData.currentStreak = res.continuousCheckin;
@@ -103,7 +108,10 @@ App({
         this.globalData.hasCheckedToday = res.hasCheckedToday;
         this.globalData.makeUpCount = res.makeUpCount;
 
-        console.log('用户数据加载成功');
+        console.log('用户数据加载成功', {
+          dailyCigarettes: this.globalData.userInfo.dailyCigarettes,
+          cigarettePrice: this.globalData.userInfo.cigarettePrice
+        });
       } else {
         console.error('加载用户数据失败:', res?.message || '未知错误');
       }

@@ -214,12 +214,12 @@ Page({
    * 计算健康收益
    */
   calculateHealthStats(days) {
-    const userInfo = app.globalData.userInfo;
+    // 优先使用全局数据中已保存的用户设置
+    const userInfo = app.globalData.userInfo || {};
 
-    // 默认值
-    const dailyCigarettes = userInfo?.dailyCigarettes || 20;
-    const cigarettePrice = userInfo?.cigarettePrice || 15;
-    const cigarettesPerPack = userInfo?.cigarettesPerPack || 20;
+    const dailyCigarettes = userInfo.dailyCigarettes || 20;
+    const cigarettePrice = userInfo.cigarettePrice || 15;
+    const cigarettesPerPack = userInfo.cigarettesPerPack || 20;
 
     // 计算节省香烟数
     const savedCigarettes = days * dailyCigarettes;

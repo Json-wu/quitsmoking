@@ -139,6 +139,9 @@ exports.getUserStats = async (req, res) => {
         nickName: user.nickName,
         avatarUrl: user.avatarUrl
       },
+      dailyCigarettes: user.dailyCigarettes,
+      cigarettePrice: user.cigarettePrice,
+      cigarettesPerPack: user.cigarettesPerPack,
       quitDate: user.quitDate,
       quitDays,
       continuousCheckin,

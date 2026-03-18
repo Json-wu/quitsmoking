@@ -72,28 +72,20 @@ Page({
       // 获取用户统计
       const statsResult = await userService.getUserStats();
 
-      // 获取勋章列表
-      const badgesResult = await userService.getBadges();
 
       console.log('用户统计数据:', statsResult);
-      console.log('勋章数据:', badgesResult);
       console.log('签到天数:', statsResult.totalCheckin);
       console.log('电子烟次数:', statsResult.cigaretteCount);
       console.log('送烟次数:', statsResult.shareCount);
 
       const totalCheckin = statsResult.totalCheckin || 0;
 
-      // 计算勋章等级
-      const badgeLevel = this.calculateBadgeLevel(statsResult.quitDays || globalData.quitDays || 0);
-
-      // 初始化勋章数据
       // 计算戒烟统计数据
       const quitDays = globalData.quitDays || 0;
       const healthStats = this.calculateHealthStats(quitDays);
 
       this.setData({
         userInfo: globalData.userInfo || {},
-        badgeLevel,
         quitDays,
         savedCigarettes: healthStats.savedCigarettes,
         savedMoney: healthStats.savedMoney,
@@ -130,10 +122,11 @@ Page({
    * 计算健康统计数据
    */
   calculateHealthStats(days) {
-    // 从用户设置或默认值获取
-    const dailyCigarettes = app.globalData.userInfo?.dailyCigarettes || this.data.dailyCigarettes || 20;
-    const cigarettePrice = app.globalData.userInfo?.cigarettePrice || this.data.cigarettePrice || 15;
-    const cigarettesPerPack = 20;
+    // 优先使用全局数据中已保存的用户设置，其次使用页面data中的值，最后使用默认值
+    const userInfo = app.globalData.userInfo || {};
+    const dailyCigarettes = userInfo.dailyCigarettes || this.data.dailyCigarettes;
+    const cigarettePrice = userInfo.cigarettePrice || this.data.cigarettePrice;
+    const cigarettesPerPack = userInfo.cigarettesPerPack || 20;
 
     const savedCigarettes = days * dailyCigarettes;
     const savedMoney = ((savedCigarettes / cigarettesPerPack) * cigarettePrice).toFixed(2);

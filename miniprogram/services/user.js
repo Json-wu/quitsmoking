@@ -80,20 +80,6 @@ class UserService {
       throw err;
     }
   }
-
-  /**
-   * 获取用户勋章列表
-   * @returns {Promise} 勋章列表
-   */
-  async getBadges() {
-    try {
-      // 勋章功能已移除
-      return { success: false, message: '勋章功能已移除' };
-    } catch (err) {
-      console.error('获取勋章列表失败:', err);
-      throw err;
-    }
-  }
 }
 
 module.exports = new UserService();
