@@ -1,6 +1,9 @@
 # 微信小程序
 miniprogram_npm/
 node_modules/
+server/node_modules/
+server/logs/
+server/.env
 
 # 日志文件
 *.log
